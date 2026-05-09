@@ -1,0 +1,1902 @@
+Intro
+what's up guys welcome to new Unreal Engine 5 tutorial and today we're going to continue with the RPG Series today we
+will be implementing some sounds and modifiers of the UI so it starts looking a bit nicer it's going to be a very easy
+beautiful so let's get started all right so the first thing that we're
+Importing Sounds
+going to do is go ahead and create a new folder for our audio so here we go place all of our sounds basically let's go
+ahead and enter and we're going to create some categories so let's go ahead and create a new folder and the first
+folder is going to be for footsteps and then I'm going to create another folder and it's going to be basically for
+um grunts or hits so I'm going to put grunts slash hit
+uh it's in in plural and then we can just go ahead and create another folder for UI so basically kind of interface a
+you know sounds so for example when we level up and stuff okay great so let's start by
+importing some of these sounds so I will be leaving them all in the description
+as well as the UI and that later on in the episode we'll import but let's first of all start with the sounds so I'm
+gonna go ahead and open the folder and you can see that we have all this different sounds so let's begin with the
+first step so let's go ahead and find the footstep and drag it into the first steps folder
+great there it is and then we'll go ahead and do the same um with the grunts so we have one grunt
+here so let's go ahead and drag here and then uh we also have two depths so let's
+go ahead and get the two depths and just drag it here too now you see the sometimes you will see that it appears a
+message and if you want to make the sounds as a template just say no we don't need that over there and then we
+need to import some other sounds so we have left the knife stab and the level
+up so first of all let's get the level ups and just put them in UI and then great and we just need the uh
+huge or I don't know how you really pronounce it but it's really like a okay for combat and then nice step so I'm
+gonna go ahead and put those under Grunts and hits later on as we have more
+sounds we can Implement more sub folders and categories to you know manage a bit everything list so that's all we need so
+we can go ahead and close this Ctrl shift s to save everything and there we go so let's begin by implementing our
+footsteps because right now if we press play we can walk around but there's nothing interesting going on of course
+Footsteps
+so this is the footstep sound probably you won't hear it so I'm gonna actually go ahead and just increase a bit the
+volume of the um recording okay so there we go
+you can kind of hear it is pretty subtle so that's what we want and of course later on we'll be importing more uh
+different footsteps depending on the surface for example where in the sand or when we are in concrete and Etc so right
+now we're just gonna add a generic footstep just to get the feeling of it so the thing I want to do is make it
+Dynamic so instead of having a lot of different varieties of it and then going
+ahead and just picking a random one what we can do is create a meta sound and
+then dynamically randomly change the pitch so you'll see what I mean I actually did a video on it before so
+yeah let's go ahead and right click and go into sounds and you will see here a meta Sound Source now if you're in 5.1
+it will automatically be enabled like the plugin and stuff but if not you can just go to edit plugins and go into meta
+uh sound and we go just go ahead and enable and basically reload the reopen
+the editor but if you are in 5.1 or upwards it will be fine like me so just
+right click sorry it's right click here this will be an MS underscore footstep
+let's go ahead and open this up so you see that's how we have this graph and we have like if it was pretty much a
+blueprint so here we can basically make our notes to create our incredible sounds
+so let's go ahead and just add a wave player in our case it will be just a
+mono one and now we can go ahead and find our first steps and then we can go ahead and plug the output into our outputs so the
+output on the sound will be here and then the on finish event will be plugged in here and now if we press play
+it just place the sound as normal so just going ahead and playing the sound like I was before but now we want to do
+is get the pitch and randomly change so if I for example put this at 10 you'll
+hear a difference but if I put it back to zero it's now a
+bit different so basically is one two each time that we play this randomly change the pitch
+let's go ahead and write this and say a random float and now we go sorry about that now we
+can go ahead and plug the in on playing to the next and then do your next into play and now the minimum will be well
+depending on the Range that you want to have so let's say for now -5 and maximum
+three so I have a bit of range now we press play
+each time that we play is a bit different and maybe we need to close a bit of range so minus three and three
+that's a bit better so really it's just up to you going ahead and choosing the sounds that you want let's go ahead and
+save and we can close this so the last thing I have to do is create a sound attenuation basically make it on
+a 3D space because if not it will play through the whole world I wouldn't like that so we're just gonna go ahead and
+right click sounds so detonation it's gonna be sa underscore and really
+we can create different ones for footsteps and stuff but for now what we're going to do is create one for the
+character overall and this will actually be placed on audio so we can go ahead and move it and this will be basically
+the general character sounds so footsteps grunts um maybe some depth effects whatever it
+will be under this alternation now we can go in the future and we want more control create one for footsteps one for
+the grunts and so on but I think we can create a general one let's go ahead and open this and you can see that the only
+thing that we have to touch is the inner radius and the follow-up distance so we can do to basically go ahead and test this is
+Attenuation
+just get for example the footstep sound number one drag it into the scene and then in here set the asset alternation
+setting to be the asset attenuation what we have just created so now if we select the object you can
+see that we have this massive um spheres and this just indicates the range that it will go through now it is
+huge and we don't mind to be hearing the player right over there so let's go ahead and open the attenuation and now
+we can do is control a bit the values so first of all the default distance we might need to decrease this quite a lot
+let's go ahead and put around 800 for now now the inner radius basically the
+is basically if you're inside this radius you will hear it 100 on all directions like if it was playing on 2D
+almost so we want to limit this quite a lot around maybe over 100 and then maybe
+we need to now increase a bit more default distance because we did decrease a lot so maybe around a thousand and it
+will also create a nice fade now this is just testing and see what works best for us now let's go into footsteps and in
+the footstep sound we want to go down and apply the automation and now we're going to do exactly the same with the
+meta sound so we're going to go into the source alternation and add it over here
+and now it will go ahead and play there so now we can go ahead and delete the example one in the scene uh if you place
+it like me and then we can do is start basically applying the footstep animation on our character because right
+now of course we have not implemented anything so when we run nothing happens so we need to do is go into characters
+mannequins animations uh money
+and then we have all the animations I want to go into the mm run forward so
+let's go ahead and open this of course if you're using any other animation you can go and open up yours and now this
+because this is the template example animation it has this really nice um layouts over here so we can see
+exactly where we need to play this sound so basically basically this notifies using um says when the foot touches the
+ground so it's going to be very easy for us because we're going to do just go into notifies and add a new track and
+this will be basically uh footsteps and now we can do is just place our cursor right on the first
+um foot and just right click and go into add notify and then play sound and now
+we select it we might move it to match the point over there edges approximately and you select
+it and go in details and just put the MS underscore footstep not the original sound but the meta sound because we
+wanted to basically play it dynamically each time and now you can just copy this
+and just go into the cursor and it starts pasting this over here and basically we'll just go ahead and
+fill on all the places now we can Evie even a preview here so
+uh yeah well okay we are not hitting it but we should be able to hear maybe it's
+because they're attenuation but we'll see so actually run if we press play there we go we're hitting it
+maybe it's hard to see in the recording but we are basically go ahead and hear me
+so right now we only can hear it in the normal 4 animation if I were to Sprint without nothing happens so we have to do
+also do it in this print and then also when I jump and land there's no cool sound of landing and also when I um
+basically motion Warp there's no sound at all let's go ahead and add just a few sounds over there
+so first of all let's go into the Sprint and do exactly the same now because I already have a copy I can just go and
+select the track I actually create a new one so I'm going to notify it a notified
+track for the steps and then select the track click on here and then Ctrl V and
+then just put over here of course for some reason you're copying and pasting isn't working just right click like at
+the before notify play sound and then select it over here but it is way faster if you select the truck like Click put
+the mouse over and just um basically go ahead and paste it and if not you can just move it or apply it
+like it did before and there we go great so that's done over there
+and now what we have to do is go into the land animation so in here we have it
+over here open it and then pretty much let's say around here we can start
+planning so we can do is again add another track it's gonna be land and
+then we can just add a new notify play sound um in our case we're gonna be using the
+same Ms footstep but in this case we can increase lightly like into 1.3 the the
+volume because hey we are landing with more velocity so we're hitting heart of the ground so we can play a bit
+um more louder at the sound and that this does it pretty much
+um so now we need to do it also inner and voting animation so we already have it on walking
+my Sprint when we jump on the land so we now have to go ahead and do it when we
+vote it's going to characters RPG animations and now we can go into our vaulting and now what we can do
+is open the animation sequence the number one and basically use ignore the curves and then we can go to the notify
+section so here we kind of need to put the post over here and see so okay we're jumping here and right there there's
+this uh fit touching the ground around sewing 0.46 now this can be pretty
+approximate but the best uh best timing you do the better of course so in the
+notified truck add a sound the play sound and then there's gonna be the MS
+first step and if you want we can increase this into 1.3 like we did before because I guess that's a bit
+harder because we're hitting with more velocity but it's up to you and then here is touching with the other foot so
+let me just click and paste it because I already copied it so there you go there you go and then jump
+and then and here we actually can play two separate first steps on here we have one
+I know here we have another one so basically because they will be probably overlapping we just place this here and
+you smooth a bit into the right and you can see over here
+there we go so everything is looking really cool so if I press play now when I vote
+I also go ahead and have this sounds go ahead and run and everything cool so everything's working great footsteps
+done so now we can go ahead and move into our well knife hit on the assassination because right now it is
+pretty bland if I go over here and yeah it's loaded in this headers don't worry about that anyway assassinate you
+know like there's no sound let's go ahead and put some cool sounds over here so we can do is go into the characters
+Assassination
+RPG character animations and in assassinations we can go and find our
+animations and put them now real quick what we're going to do is exactly the same that we did with the
+first step is great another meta sounds so we can dynamically change the pitch of the knife hit so it's a bit better so
+in in the grunts and hits we can get the knife stop and just go ahead and right click create a new metasound Ms
+Metasound
+underscore and basically knife that basically let's go ahead and open this
+put it over here and now the input will be basically the play waiver uh wave
+player mono I said the other way around and then out in the mono will be here and on finish on here and now the wave
+asset will of course be the knife step and then we'll do the same get this to the random load and then the on plane to
+the next and then on next onto here and then we can put a different range so let's say that we're going to do pretty
+much the same so around from -3 to let's say three so we paid
+[Music]
+yeah that sounds really cool so now we can go ahead and save everything and
+close it and we one thing before we're gonna open the next step original sound
+and go down and apply the character sound Automation and do the same with the meta sound so let's go to the
+methadone I don't know how to speak metacaranda go into source and again in
+addition settings you supply the same alternation so it will play in 3D space great so now yes we can go into
+characters RPG animations assassinations and then go ahead and go into the per
+knife in this case we need to be the attack end so the one who plays that and
+Attack sound
+to just we can just go into the animation sequence the original one and now we need to basically time our hit
+now maybe you have basically noticed that the sound for the nav head does
+have a bit of delay it starts a bit later so we have to basically just put this on a bit before and because of that
+it's a bit annoying but hey it's what it is let's go here and then we need to calculate a bit where it's
+gonna hit so really I mean the player is not gonna notice some milliseconds so it doesn't matter it just approximate okay
+so let's do over here I guess that here that's a pretty good sound let's go
+uh before because like I mentioned before it has a bit of delay right click add another five play sound
+selected and it's gonna be the MS knife step and then we can
+press play and preview it now yes it has a bit of delay so we can move it [Music]
+okay it has to be even a bit further
+[Music] yes way better copy it and then go into
+here and then here is again so a bit before and then
+[Music] great and then here we like rubbing off his neck so I guess over
+here is kind of good and put it over here so you can see a bit the timings over here
+also when you pass over they also play so maybe it's a bit annoying but hey what's with this anyway
+[Music] great and a thing that I'm going to do is also
+play another sound of the guy screaming so we can actually do it better from the
+like I guess the health system or the uh assassination system so what we can do
+Assassination sound
+is just get the dummy selected in the scene Ctrl e to open up is blueprint
+and now here we have different stuff uh let me just plug in the racto I don't know why I have this I think it was
+doing a thumbnail uh so don't worry about that um but now we have all this great
+so we can do is when it dies we can play an assassination from ragdoll
+right after the iteration this is around the timing when we die so well the enemy
+dies so we're going to say a plant play a sound at location and the location will be what the get actor location so
+basically his current location right now okay is plugging the sound uh which in
+this case will be the grand the death one or death two so in a second we'll do
+a a sound queue so we can pick one of those randomly and then in the attenuation again we need to put the
+character and then we can split over here okay so now when I go here and press
+play I Can Only jump this pretty cool go into here go into his back he's turning
+around because yeah it turned him for a thumbnail basically anyway go here
+that was maybe too much delay okay so um um yeah so let's better go ahead and do
+it separately so we can do is basically just make a sequence and then later on instead of playing
+from here play from here with a less of the delay so let's say it's going to be 1.2 around
+all right let's see that's a bit um better so go ahead and just press play
+here yeah it's a bit better okay so it's really playing with these sounds you
+know on the enemy timings and stuff so we'll see
+okay later 1.7 I think that will be great okay good
+so this is yeah just playing around with the with the timing stuff uh pretty much and
+of course you can use whatever sounds you want if you have pod a pack or whatever you can use those instead of
+the ones that I'm putting in the description anyway so now let's go ahead and let's see what
+Death sound
+sounds we have left I guess of the UI so in grunts yes let's do this on qsys right click on the sounds sound queue
+and now it's going to be S uh C underscore s grungy basically and death
+so now we can go ahead and open this and we can just go ahead and press Ctrl space so we can open the this tab and I
+can go and find our two deaths and instruct them and now we can just get this random node
+when you support over here so it's time that we play oh oh we'll be playing a random one and now
+here we can just uh put this one to be the SS death and there we go great so now we
+can close this cool so now we have pretty much all this now we have some push animation that we're not using
+when you attack this more later on in the series you'll start using this
+and then we have another ground for this so This ground which is very small
+we're gonna be basically using it when we go ahead and jump okay so let's go
+ahead and find the content um actually and also sorry real quick
+better go into the grunt and I play the sound alternation so in that specific ground let's go into
+the characters mannequins animations many let's go into the jump
+let's go into the right over here around and it's at the
+play sound notify and then we can plug in the grunt over here
+so I'm going to jump it will play the the grunt animation
+sorry the sound uh cool and also let's go ahead and end with the animation Montage
+of the RPG character animations bouting in here
+around here let's say let's go ahead and do the play sound Audi
+it's gonna be grand there we go so now we press play we go
+here also do like and goes ahead and balls like if it's doing exercise good
+Stamina
+real quick before we start with the UI and some UI sounds uh there were some things that you guys commanded as that
+if you're standing still and you press alt this stamina decreases as you can see it only has to be if you're running
+so let's go into the third person character blueprint and quickly go ahead and fix this so we can do is go into the
+stamina system and uh also in here and basically control if we are not
+moving actually here so only we'll drain if we are basically if can Sprint is
+true and also we're moving so let's get the character sorry no just the get velocity
+and then we can just do a vector length so it will convert into a nice float and
+drag it and now we can just make that is bigger
+and then zero so let's put an end condition and this will go here and this here is
+here so only if can Sprint and the velocity is bigger than zero will be
+true so now it doesn't happen you see it doesn't decrease but when I
+I'm walking and running yes but now when I'm standing still which is great so
+it's exactly what we went ahead and wanted great also if some of the sounds
+you don't you kind of really hear them you can go ahead and increase the volume and stuff that's up to you and also
+um if you're not hitting in the recording is that well maybe I have my voice more than my desktop audience
+stuff all these things anyway let's go ahead and go a bit and customize the UI and implement the
+UI
+sounds for the UI until now which is just level up pretty much so let's go ahead and open the UI um hot
+over here and you can see that we have the two progress both three progress bar and
+then over here is some text as in here and then we have a nice icon here and then we can add some more icons so again
+I have left uh basically in a folder to download so let's go into
+the UI and just create a new folder and let's just name this right now a generic icons and here we're going to place
+altness let's go ahead and open the folder and basically in here I have left more things and also a font just go
+ahead and first select the icons and just drag them in you can see them and then UI you can
+just go back and create new folder for the fonts and now we can go ahead and get the font folder just drag it in and
+it will say that if you want to create a new asset um and let's say yes yes all
+um yes and then gone through chip this maybe you have some failure of imports because we did try to
+import another file uh but it's on of what we need so now that's okay we don't
+need any more so let's begin with the UI icons so contribute s to save everything
+and now we have a few over here so let's go into the hot and now first of all let's go up here and select this level
+icon and now we can put the shield that I was talking about in the last episode now if you want and I'm gonna do so is
+go ahead and just drop it a bit and put it right behind off the um up text so we can go and get the icon
+and right beneath the level text there we go around here I guess and then we
+can get the text and just put it over here then maybe has to be a bit bigger so that's up to you
+it's playing around a bit but this and then this sound we have to kind of Center it
+and then we have to move it wait no no this move it a bit so the position X
+you can move it there we go that's a bit better so we can also maybe yeah we can
+increase a bit more so actually let's see the sides of it so we go ahead and put the mouse over you can see the
+dimensions is 512 by 512 um and we go here
+says X is five tall five though so that's really not what we want uh so basically just it has to match both so
+let's try it with 60 and 60. 16.0 okay that's a bit better that's
+better actually yes okay okay um yeah again we're gonna do that for now
+yes looks pretty cool okay and now we're gonna go down over here and add the the health and stamina icon so we just get
+the image right over here anchor it into down over here change the name into
+let's say the health icon and then we can go into the image and
+just get the lowest Health icon or how did I name it plus okay well just put
+plus here and then this will be like let's say 25 and 25 and let's just put
+over here so this size will depend made us too big uh to 15 by 15. yeah like
+that a bit more all right and I guess that this icons over here could be just
+temporary so yeah there for now pretty much let's get this contrad to duplicate
+it and make sure the anchors is down and yes it is put it over here right next to
+the stand lamp change the name to be what is stamina icon and I'm gonna
+change this to be it was I think it was energy this time or how was it a flash okay
+it's called flash let's put it here and then uh put a bit more to the right
+maybe yeah that's pretty good like that okay and compound say for now if we press
+play we have cool icons next to a UI now maybe it's a bit uh
+maybe it's small so you can increase that so we decided to increase that but also have to mention that I'm using a
+um a 4k monitor so that heavily you know it reduces a bit deep basically just the the size overall of
+things so let me just put this back over here
+uh why and then this is more over here
+yeah it's a bit better okay great so it shows now the progress part so we can do is select the progress bar and then go
+into the background and fill image so in this style open this up background and fill and then we can go ahead and just
+put the bar this will be this one and then X come in exactly the same for the fill image
+as bar there you go now we have some nice round edges let's do the same with the stamina go here and put bar
+and here bar and now it will do the same with the level up so selected go here
+see bar no here no damage sorry bar
+and then the same in the field one bar and there we go a nice it looks pretty
+nice right now as you can see it looks way way cooler and better just much
+better um also let me get this two guys over here and just increase a bit and the
+this guy over here gonna put it in 20 so it's a bit smaller so it fits a bit better the text and now what we're going
+to do is go ahead and change the font so we can do is check how it was named so
+it's going to the fonts over here and it's called basically nanum uh something okay let's go here select let's start
+with this momentum here and now we can go into the font and change the font font uh family into the num and you can
+see that we have all of them here let's try with the regular okay made us to thin bold bold looks pretty cool let's
+go now up here and change the font to be bold I guess
+it was what we said yes and then here we can just say extra bold let's go here extra bolt and there
+we go and of course you can use whatever and type of uh
+font and UI you want absolutely there we go now it's looking much nicer so now
+Levels
+let's go ahead and I I think it was two yeah I can increase my levels into the
+right top you can see so now when we level up let's play a nice sound so for that what we're going to do is go into
+the blueprints and go into the player's test okay and now you can see all this so let's go into level and go into the
+increased level function and basically right after that we increase the level we noticeably Sun plate sound and in
+this case it will be just too deep because we're going to need to play in three space it's just playing in you know sounds in our screen so we need to
+now go ahead and find it so see how it was called because I don't remember so in UI we have level up one
+and two so we have to play the two sounds so let's go ahead and find level up one and then copy and paste it and
+just play the level up too now I don't know if we need any delays let's see so
+now if we Press Play I know increase our level [Applause]
+there you go it looks pretty cool look at him here look
+yeah it's pretty cool so later on of course we will you know show some image
+effects uh on the top of the like Assassin squid of the screen here with some flashes a new level achieved level
+four whatever and this sounds honestly sounds pretty cool let's hear it again
+of course now it is harder to level up because our XP is increasing the required
+there you go I like they sound like they sound pretty cool pretty cool great so I think that we got some really
+cool things going on we have some nice footsteps maybe you cannot hear any recording but they are and I'm here now
+and we're really cool and then also some grants when we jump and motion warp and stuff and then also
+here when we kill the guy over here so of course we will need to modify the
+assassination so that there's like some blood effects coming up Etc uh maybe just with the sound systems it just
+feels a bit raw but don't worry there's a lot of things uh tiny details to add okay guys so gonna be leaving this
+Outro
+episode here in the next episode we will begin finally with combat hopefully okay
+so um yeah yes I'm very excited uh so we'll start a bit with the combat system with
+the basics of February structure and we'll go ahead and just test our combat
+system with this dummy here he's suffering a lot with our assassinations already but hey now he will have some
+swords coming in into his head but this is what it is okay so if you found the video helpful I really appreciate you
+like the video and subscribe to my channel and also go ahead and join my Discord server so you can share your
+progress and also go ahead and ask any questions on that thing and also I
+really um appreciate you could follow me on my socials just Twitter and Instagram and
+also check out all of my Unreal Engine 5 tutorials and with all said bye bye
+foreign 
+
+what's up guys welcome to new Unreal Engine 5 tutorial and today we will continue with the RPG series we'll
+finally begin with the combat system it's gonna be a very easy view to follow so let's get started
+alright so first of all before actually starting with the comment system I want to fix something that you guys commented
+in the last video and it is that you can still basically drain the stamina while
+your emotional uh warping in the Bolton system or falling and we don't want that
+so let's go quickly into the third person blueprint and third person character blueprint and as you go here
+into the stamina section and in the drain stamina event we want to go into
+the condition here in the branch and basically just add a new pin and basically we're gonna get the character
+movement component and then get the more so the movement mode and basically when I check if this
+is equal and then go into the equal of the enumerator here to uh walking and
+then plug the output into the third pin that we have just added and now we will not be able to drain stamina while we
+are falling or bolting Etc now maybe in the future we'll of course add the voting consumes stamina but it will be
+differently that the normal Loop over here so great now that's fixed we can
+actually start with the combat system so let's quickly go into characters RPG character animations
+and of course we're gonna go ahead and create a new folder and this will be basically sword uh attacks
+let's go ahead and enter so I will be limiting some animations in the description so you can go ahead and
+just import them so I will show you how you can import them now designations are from the epic games RPG template from
+the marketplace level three so what I did is just export some of the animations that I need and then modify
+that bit so they look a bit nicer for our requirements and it's just easier
+for you to just download a few you know animations from Google Drive and then
+just import them then downloading whole Pride saying which animation import Etc so I basically left it more easier for
+you guys let's go ahead and open the folder where you have basically downloaded all of the
+animations and you can see that we have basically four of them we have three main attack ones and then a kick so
+we're going to do is select all of them and just go ahead and drag them into our content browser with a folder and now
+you can see that we have the import options so just go up here and we set them to default just in case you
+accidentally you know touch something in the past and then in the skeleton we're gonna select the SK mannequin for the
+ue5 skeleton so don't make the mistake of choosing the alt ue5 we will all do
+before sorry we want to choose the ue51 which is just the SK mannequin like that
+okay like mainly of our other Locomotion animations and stuff and now with all
+that said you can just say import all and now with a few seconds of waiting we should have all the animation supported
+as you can see so we can quickly preview them so they're not in the right order which is really weird we have attack
+three and then one and stuff but whatever if we go ahead and open them you can see that they're working indeed
+and they're looking pretty pretty cool great so counter shift s to save
+everything and now we will not touch the animation montages and stuff right now
+who basically Implement all that later on and what we'll do right now is basically start with the blueprints
+itself with the system itself and you know all that kind of stuff and the combo and stuff so later on in the video
+we will go back here and basically start creating the montages and implementing the animation notifies change the
+transitions so it looks nicer and so on but for now we don't have to do anything like that anyway and they actually did
+place in order okay good all right uh so let's go into content I'm gonna go into Blueprints and we'll want to do is
+create a new actor component so we have everything a bit more organized let's go and right click go into blueprint class
+I'm gonna go ahead and go into actor component and this will be bpc underscore and then we can call this
+something less attack system and then we can just go ahead and enter
+and open this up of course you can change the name that you want and also of course you can choose whatever
+animations you want I'm just leaving these ones in the description because it's the ones I can basically use in the
+series and I do recommend using the same ones but if you go ahead and use your own ones it's totally okay great so we
+can just delete this begin play and stuff and we can basically get started so let's first of all go ahead
+and just create a new input so we can you know click the left Mouse button and attack and so on so let's go into here
+into the content browser go into third person input and then actions right
+click go into input and then in production this is going to be EA underscore and let's say it's going to
+be just attack now we don't have to even enter we can just go back into the input folder and
+then open up the collections and now we can just go up here into the mappings and add one and this is going to be the
+new EA attack that we have just created and now you can just click in this icon over here of the keyboard and then press
+the left Mouse button and it will automatically assign of course you can go ahead and search it manually I
+wouldn't have to touch anything more you save and closer great so now in here what we have to do
+is just right click and just say EA underscore um what was it attack okay I will Double
+T and it's gonna be the first one here with the arrow great so we're gonna go in start it and we basically need to
+start creating some um variables here so the first variable is basically can attack
+great and this is going to be basically a Boolean because it can be true or false so we're gonna go ahead and get
+the can attack and get it and then go ahead and make a branch so in this episode we will not actually
+touch the can attack and this will basically later on in the series allow us to basically for example if we don't
+have any stamina left uh not be able to attack or we are swimming not be able to attack and so on so this is more to the
+feature okay anyway so now we have to do is go ahead and right click
+over here down here and create a custom event and this will actually be the
+sword attack okay so now what we're going to do here is actually call the
+sword attack so basically we'll just create custom events to have everything a bit more organized so if we actually
+can attack we will go ahead and call the event great so and here we're going to do is make a branch and we're going to
+do is basically create a new variable which is is attacking
+and again it's going to be Boolean just go ahead and drag it and get it and just plug it over here
+and then compile now in order to make things work select the can attack variable and take it so it's true by
+default because we want to be able to tag uh it is just in the future we're gonna disable it when we have you know
+don't have stamina stuff then it's attacking we want to that you know leave that disabled because of course we are
+not starting the game already attacking great so now we're going to do is create another variable and it's basically it's
+called save attack and then we want to do is drag it and in
+true set it to be basically true then copy and paste it and then in the false
+it will be false okay compile unsafe so basically if
+um basically this variable of safe attack will allow us later on to transition between the combos so we
+click again and we're already playing an animation we will go and then play the next one once the other one finish okay
+uh so what we want to do right now is go and make from the false condition so
+basically if we are not already attacking and basically make a switch on
+integer okay and this will allow us to basically play different animations
+depending on a value so this value will be the attack endings so let's go over here right click and promote this to a
+variable and we're going to call this the attack index and I guess this will be the index
+basically integer sorry um so basically depending on this value over here so if it's zero one or two we
+will be playing different animations so you select the integer switzerlands node and just add some paint so in our case
+we will have four animations so just go ahead and just add four animation here so from 0 to 3 and then later on we will
+start implementing the play montages section over here so quickly what we have to do right now
+is create another custom event and this will basically be the sword attack
+combo so basically later on we will call this from the animation Montage itself and
+what we have to do right now is just add a branch and then make sure that save attack is true so if safe attack is true
+it means that well we have an attack already saved so we have already clicked
+the mouse again while the other animation is playing so we need to basically um directly go and play the animation so
+we need to go ahead and set no sorry Set uh save attack to pause because we will
+not need it anymore and then just plug it in into this switch twins so we will play the animation now just go ahead and
+hover over the connector and just double click and then you have the spin so you can have things a bit more organized
+let's say great and then in false what we'll do is create a new custom event so I just go
+down over here and custom in a little bit the stop combo and then on here what we'll do is just
+get the is attacking and you set it to be false and then set the attack index back to zero so basically we will just
+be you know resetting some of this tab over here and first we will go ahead and call this stop combo
+um event over here so basically if there's not any more you know animations to play
+if we don't have you know any saved animations that we have clicked already uh it will basically stop now I know
+that this you know system just talking like this and for beginners it might be a bit confusing of what we are actually
+saving and stuff but don't worry as we go and start implementing the attack and notifies in the animation monitors you
+will start and understanding and you know a bit better these things okay great so now we can go ahead and
+continue so let's actually just Place some comments so you know we have everything a bit more organized this is
+like the first part over here I'm gonna press C and this will be the attack I'm click
+uh sorry no that's it's not attack click sorry this part over here
+I press C and attack input actually is gonna be a better name
+the the second part is going to be the sword attack
+and then the this one will be basically the combo uh continue
+and then this will be the of course the stop combo or attack in general because
+this will not only stop the combo but really the attack um great so we can now go ahead and continue we
+have things a bit more organized and we can also go ahead and place our um
+saved uh preset over here so it looks a bit nicer um in all groupings and there's a
+Sunday that matches okay great so now it is time that we
+actually start placing the you know any mountages over here but of course first
+of all we do have to create the animantages but let me show you how it would look so to have things a bit more
+organized what we're going to do is actually create more custom elements now we're going to go ahead and create a lot of custom events today but it will just
+keep things a bit more organized so we can just right click and create a new custom ad let's say this is going to be
+the attack one and then we're going to do this is make a do once knot and then we want to do is
+just make a delay and change this delay to be only 0.1 seconds this is just
+making sure that we will not you know attack the same animation twice just in case our flow just doesn't work
+correctly or we double click very fast or something like that just making sure that the flow is correct
+and then later on what to do is just play the Montage so we're going to use this simple the function node over here
+sorry not this this is not display and name montage
+oh yeah sorry so we actually kind of use um the play Montage in a component so
+we'll need to use this one so don't worry we'll plug in the skeletal mesh in a second but basically in here we'll
+also put the animation uh that we want to play and then basically right after we have
+done this uh what we want to do is just go and get the attack index and basically increment
+by one so in here the first one will be one and now we can just get the output and just plug it into the reset so we'll
+basically be a lot to play it more than once but now just hover over the connector double click and then this you
+know pin will create so you just go and move it around and then do the same hover double click and put over here so
+it's you know way more organized and now we can select everything basic to commenting and this will be you know the
+attack one basically and we're gonna apply our preset so it looks pretty nice and then just move it over there
+and now here we just call the attack one and there we go we'll have everything a bit more uh organized and neat so now
+yes it is time to go ahead and start creating the name montages so let's go
+over here let's go into content characters RPG character animations I will want to go into the sword attacks
+now later on in the future we will have more different attacks so this are gonna be the generic sort of text but you know
+in the future if you want to add more different I don't know how do you say but different states of weapons like for
+example um it's more of a hammer that you have you hold it with two hands of course you
+can go ahead and Implement that and we will try to implement it we'll see how this series goes of course we'll also Implement bow and attack system but
+that's a bit different okay so now what we have to do is just create the animators so we can just go ahead and
+select all of the animations and also just open them and make sure that room
+motion is enabled if not just go ahead and take this so let's go ahead and do so it seems that they didn't export with
+the promotion on just open all the animations let's go here and enable root
+motion okay there we go and also the kick
+let's go and enable this over here great so now we can do select all the animations right click on to create a
+name montage and now I will just go ahead and create the animation and we can just leave the name as it is so Contour which is the S to save
+everything as it is right now great so now we can see that we have different animations up here and I don't know why
+they are not there we go so we can just go out of the folder come in and it will
+be in order okay so if we start with the attack mode you can see a bit you know
+how it looks and stuff a simple animation is attacking there we go so we
+have to do now is basically some um a name notifies so we will indicate
+where we want to continue with the combo and when we want to end our combo
+so it is a simple just go in here and in the same folder you can just right click and go into blueprint class and I will
+go into all classes and find the um a name notify and you'll see we hear
+so we'll basically say pretty much the print of it not all details or make sure that you don't set up the another five
+states it's going to be just a regular nm95 so you can say select and then this
+can be the name Nadi I don't know how their name yet like this
+just put a name not a fight okay underscore and this will be basically the
+um sword combo and continue next yeah next we can say
+uh a name notified sword combo next great and now we will need to go ahead and duplicate this so Ctrl D and this
+will be the name notify underscore and this will be combo and
+basically it will just end the whole combo great so let's go ahead and start up with the sword combo next let's go
+ahead and open this up and now what we need to do is go into the function section in upright and now we can just
+plug in the reset notify basically when the notify is triggered it will be
+launching this function over here so we want to get the mesh component and we want to get the owner
+if I type it correctly there we go get owner so now with this we can use to cast
+to the third person character and now looking is called our function
+so we can just get from here and just say the sword oversight combo oh yeah so of course we
+need to access its component because it's from a component so also what we're
+going to do is go here and uh we're gonna go into third person
+math content third person Blueprints and also added so we don't forget later
+let's go into the component section just add the uh was it the attack
+more BBC underscore attack system there we go quick and we can just enter and we
+don't have to change anything and you can see that also we have neatly our variables here great let's go ahead and
+compile and Save so now here we can just go ahead and get the attack
+BBC attack system and just launch the combo
+sword attack combo okay so make sure that you're calling this event not the
+sword attack normal it's gonna be the combo because it's gonna be the one that will detect if we already have a safe
+attack and basically continue okay so make sure that's that and that's it we can just go ahead and Compass it now go
+ahead and get these three uh first notes so the owner third person and the component and Ctrl C to copy them and
+now we can close them and now we're gonna go back into our folder where we had basically the
+sword attacks I'm gonna open the combo end so if this appears you say open full
+edit to blueprint and we can do exactly the same as with the other notify it's going to the functions override and
+receive notify let's put over here this paste it and connect this over here and
+put this over here now make sure that you get the image component and plug it into the get owner and then over here
+what to do is say stop combo and that's it that's all what we have to do for our notifies of course now we need to go
+ahead and place them in our animation montages let's go ahead and save everything and close it let's start with
+the attack one let's go ahead and open this basically we need to find the point where we want
+um to basically start playing our next animation so it will be around here right I mean we finished our attack
+animation so let's start playing over here um so let's see I actually have some notes over here of some timings that I
+got that was pretty good so it was around in here 14. yeah so pretty much there so now let's go into the notifies
+track and just right click add notify and then we need to find our animatify
+underscore sword combo next and plug it over here and the thing is that we also
+want to place a combo end just in case we don't want to continue with our attack combo so basically around let's
+say in 39 if we have not clicked any our Mouse
+we want to stop the animation because we will not continue attacking so just right click and notify and then combo
+end so basically you can click your mouse in any of the between this point
+and if you click the mouse you'll continue with the combo but if not it goes outside here and it will just stop
+the animation completely great so we can now save and close this over here and I
+will do exactly the same with all of the other animation montages so go ahead and knock Eddie attack 2. and we're gonna
+find a bit the end position so let's say I run over here let's go into the notified track uh go ahead and if it
+asks me what just happened okay there we go right click and notify and sword combo next and then find the end
+position care of let's say here this is an approximation of course you can and then
+put the combo in this you can also put more time and effort in order to get the times that you want but the real thing
+is going to be later on when you test it playing the game and seeing if the
+transitions were correctly and stuff so there will be a lot of work after that modifying everything but these values
+work pretty good alright so now we need to go into the attack 3 and then it will
+be around here so when we just go ahead and hit the ground over here we can use
+get the uh yeah around here just get the notify the next and then on here we will
+go ahead and at the end and now we just have one more left which is the kick open the kick montage and then it will
+kick and let's say that around here we want to add the next and then over here
+we want to be able to well actually more at the end and make the combo end okay
+so of course this is all an approximation okay great so now we can go back in our
+PPC attack system and go for example attack one and we can plug it in so now we need to get the
+skeleton mesh so we're going to need to go ahead and get the owner and I believe
+that we can just get the mesh um okay let's go to mesh no okay uh get mesh
+no okay so we will need to set the cast uh which is gonna be okay let's go up
+here and at the begin sorry the event begin play so when the game starts
+let's put it over here so it's been cleaner and we'll go ahead and cast to the third person character
+if I know how to you know type correctly oh my God there we go and now we can
+just plug this on here and now we want to go ahead and get the mesh and there's
+the mesh now we just right click promote to variable and this will be the um basically character mesh and this
+will just look at it over here and now we are saving the characters mesh on our variable so now we can go here and just
+drag it over here and it will play that great so let's put this a bit more to
+the right okay I'm going to do is copy all this Ctrl C and then go over here and paste
+it Ctrl V and now we can go into custom event and put this to be the attack too
+and then there's two things that we have to do here is go into the Montage and change the animation to bd2 and then go
+into the attack index and then change this to B2 great and I compile and this message
+will go so in our case we have to also change the comment so here so in case we have four animations
+so select everything copy paste it now we just need to repeat this so go in here put it the attack 3 and the index
+to be three and the comment to be also three it might be a bit of tease but hey
+and then we just have one more to do just here so this will be the basically
+I believe is the kick um okay yes so actually the attack four
+which is this one okay because I remember now because I was testing before this system I set
+this to be also at index four but the thing is that this uh last also sorry
+the event so um in here attack three
+and attack four so in attack four it will be
+attack three but in attack three it will be the kick okay what is here and this
+is just because I found a really cool combo pattern and I had a bit to change the order but here it is so basically
+one two with two three is gonna be the kick F4 is gonna be the three okay and then
+make sure that the index are okay great and now we just want to plug the 1 into the attack two so don't be mistaken by
+one being one no okay be careful with that and then the two is gonna be the attack three
+and then the finally the four is gonna be it will attack four sorry well three is gonna be attack four
+and great that's all that we need we can actually uh actually test this yeah
+um let's go ahead and press play and we hit there we go we attack so let's see if the combo works so we can hit then go
+ahead and hit and okay so I did some weird stuff over there as you can see it like went through an animation super
+quick and so let's go ahead and see what's happening so it seems like it's like the second
+animation so it's the attack two basically this one
+so basically what I have to do here is just change a bit the transition let's go into the blend in and make us less is
+0.3 so that's a bit more and then in the blend out let's put this to be 0.4
+so this is just playing a bit with the transition but you can see that it did also miss
+some of the index sorry not index but it kind of
+just went and rushed through the transition so let me just investigate Roku what's happening okay guys so I
+just realized what it is and is that I made a mistake so just go into the sword attack event over here and basically in
+true yes we want to save the attack button here we actually don't want to disable the safe attack we want to do is
+go and set its attacking to True let's go ahead and uh broke it over it and it
+will be here and it's gonna be actually true um so that will go ahead and uh go ahead
+and fix the issue uh yeah it was basically there okay so now we can test it out so now you can see
+true and there we go we have our combo good everything is working
+there's a few things I want to go ahead and touch over here okay so the first
+thing that you have maybe noticed is that well we're gonna improve a bit the transitions so first of all let's go
+into the kick montage and let's put the blend um out time so it blend in 2.3
+okay then we're gonna go into the attack 3 montage I'm gonna set the blend out
+time to be one and on cubic and then it should look a bit nicer yes
+yes and yes all right it's looking much better another thing that you probably are
+noticing is that okay the first animation has promotion let's remove the whole character but then from the second
+one it actually doesn't have promotion so it doesn't look exactly as nice as we maybe want you know it to be
+so we can do is cheat sheet and make a custom Rune motion movement in two
+seconds okay so we want to do is open the attack 2. and then you see that we
+have this cool sliding over here so we basically have to move this guy over here okay
+um so we have to do is just put in a position over here it's gonna be down
+here okay and then we want to do is carefully put the marker on the first
+point over here so let's go into this cartoon tree now you don't see this skeleton tree you can just go into window and skeleton tree
+and select the root and now we want to do is also go and press W so it selects
+the movement tool and just go up here with the root selected at the start of
+the animation without touching anything just press the key so we will have the first key for the starting point now go
+ahead and play a bit the animation so you can see that this goes a bit backwards okay so around here which is around Point 18
+you want to put a bit of the root back just get the root and just put a tiny
+bit back over here nothing more and then go up here and press key so we have a
+new keyframe let's go babe forward and you can see that it it goes forward
+so let's go around here into Point 50 and put our character B forward now we
+don't want it to be too excessive because now it will look weird so around here this distance will be good so now
+we can press key and now this should be looking much better so now we press play
+and move now the player great second as as to say everything now you probably
+maybe not notice a huge difference but it did move now the player and it looks much better and now in Attack 3 we have
+to do exactly the same three saying the thing not the same three that sounds weird anyway we're gonna go into
+the starting position so that the root into the translate objects mode and then select
+the key go a bit forward and on here we can see that it want to be back and forward at the same time
+um it doesn't matter just go a bit forward okay so around until here and now it does the thing
+and goes a lot forward so let's go and when it finishes to around 1.56 and move
+it until here not a lot okay guys we want to be startled with this of course you can experiment with this put in more
+and less but you know subtle moments is better and now we can just press a key and now you can see that it goes back
+into the position so it's okay save and now or press play you can see boom boom
+and then sorry into click faster boom boom and then
+boom there we go so you can see the last movement okay sorry about that and then you can see it moves forward great and
+now we're using one more animation to touch with which is the kick you're gonna do the same thing put the marker at the start select root best key go
+back forward you can see it wins forward and then go here let's go here
+like this okay subtle and then press key and that's pretty much all what we need
+press save and now you can see that we start spamming and
+you like my sound effects there you go great so now we have a cool combo attack
+system happening over here and it's looking really good now of course with time we'll go ahead and improve you know
+of this add small details and so on but this is basically the starting point you
+can see that basically the instructor of it was pretty simple was nothing crazy you can see there's not a lot of
+blueprints going on it's a lot of rotation over here so that's it and of course you can Implement your own
+animations and stuff in order to make it look better and the only thing that you have to do is you want to implement new
+animations is go into the um tag sections over here and it's just
+of course change the animation that you want and then of course in the animation Montage that you have created for your
+own animation is at the sword combo next and combo and animations now I just have
+to remember one thing and let's go into the attack 3 and sorry Montage attack
+three montage here and it's because this the last animation we want to actually
+delete this short combo next and so you select and press super mirror and then
+go into the when it lands so around 1.6 and put the combo end
+so I just forgot this sorry about that but it's just so it doesn't continue the combo it doesn't break the thing because
+okay it goes here and it will start again okay it's because it's the last animation of the combo so in the last
+animation of the combo that will be defined here in the last one you will need to basically just
+place a combo and and not the continue uh combo event
+but one last thing guys it's gonna Place The Sword in our player because come on it doesn't look very good without this
+sword so we're gonna do this real quick so again I'll leave the sketchfab asset in the description so you can go ahead
+and load it so in my case it will go ahead and beat this sword so basically
+just extract the folder and now you will see that they will have another folder called source so you want again to
+extract that one and I want to do is get a folder and just drag it into Unreal Engine and then just go ahead and say
+import all and now we will have here the sword with the textures so I want to do is open up textures and then right click
+in the base okay right click and create material this will be M on sport sword
+let's go ahead and enter and now press Ctrl space to open the Quick Tab and I can go to the sort textures and just
+drag in the metallic and this will be the RGB into the metallic open up again control space and then the normal and to
+the normal and then again in the quotient into the ambient collection and then lastly the roughness and the
+redness and now can you say apply and that's where the pizza can save
+put a few seconds and then close and now we have our sword with the texture Zone what we have to add it so just open up
+this the mesh and just search for M sword and there we go looking pretty cool so now we have to add it into a
+skeleton so go ahead and open uh whatever animation you want for
+example this one it doesn't matter but now we can go into this icon in here to open this cut down great so now we're
+gonna go and find the hand right the right hand not the left one but the
+right one so we can go a bit down there we go hand R so what you want to do is
+just right click and add socket so we'll basically bind our sword to be in this socket so now just select it and we'll
+change the name to be hand underscore r underscore and sword great and now we can right click on it
+and add a preview asset so in a case this will be our sort and now we can go ahead and put the sword in position with
+the of course with the socket selected so now we can just go ahead and rotate it around like this and make it way
+smaller and put over here of course if you have your own sword model you can use that
+one but I'm just going to go ahead and use this one because it looks pretty nice and it's pretty decent and yeah it
+is it's pretty cool as a starting point of course later on we'll have more types of sports this is the basic one if you
+want to copy my exact parameters that will be here you can see the location rotation and scale and now with that you
+can go ahead and save it and close it and now what we introduce go into the
+blueprint of the player go into the viewport and then go into the mesh just
+add the static mesh over here and this will be the sword so now just select the
+seven mesh which will be of course the sword and now we want to do is go into the parent socket and now find the socket
+that we just created which is hand our sword and now you can see that it will automatically bind correctly in position
+and it looks really cool now one more thing I want to do is save this sword and go down and in the Collision presets
+set it to no Collision because we don't want our sword to have collisions our line Trace will be later on so we'll do
+some calculations later on for damage okay it will not be a direct event hit okay it will be a bit more advanced than
+that great so now we can use compile and Save and now we have a sword cool and looks
+really really cool as you can see oh yes now it definitely looks really
+really cool okay guys so that's gonna be for the tutorial if you found the tutorial helpful I really appreciate you
+like the video and subscribe to my channel I have lots of Unreal Engine 5 turtles so you know let's go ahead and
+take them out go ahead and also join my Discord servers you can ask any questions and also you know share your
+progress and stuff and follow me on all my socials just Twitter and Instagram Etc
+all right so now yes with what I said bye bye foreign
+
+what's up guys welcome to new Unreal Engine 5 tutorial and today we will continue with the RPG series we'll go
+ahead and implement the sword trade so we can detect our enemy and apply damage and we'll go ahead and also add a hit
+animation camera shake and also some sounds so we start to improve a bit the
+you know combat system and so on it's gonna be a very easy beautiful so let's
+get started [Music] all right so the first thing that we're
+going to do is of course go ahead and import our hit animations okay so we're
+going to do is go into characters RPG character animations and go ahead and create a new folder this will be the hit
+and underscore reacts and go ahead and open up this folder and
+now I will be you know be leaving the animations in the description so you can go ahead and download them they're again
+from the official epic games free RPG template so I've just extracted the ones
+that we needed and lead them in a Google Drive so it's easier uh for you guys as
+always so let's go ahead and open the folder select the you know this both animations and just drag them into the
+content browser and now we can go ahead and just say reset default just in case and now we need to apply this skeleton
+which in this case will be again the SK mannequin for the ue5 okay again done
+confused with the ue4 it's the ue5 just the SK mannequin and great now we can
+say import all and within one some seconds we have all the animations imported there we go you can see that
+it's already looking really cool go go ahead and Contour shift s to save everything so there's no you know any
+lost progress okay so right now when we go ahead and press play we can go ahead and start
+attacking the combo and stop so basically we have to make some sort of detection so when we hit our enemy okay
+another thing that we have to do is control the don't worry about us loading this haters it's controlled that there
+and sometimes we combine the combo with the assassination system so we first of
+all have to make sure that we will not assassinate at the same time that we are you know attacking with the combo
+and then also um yeah we have to basically make a sort
+of detection trait in order to do this and we'll create a very accurate one and you will see how we'll do it in a second
+so first of all let me let's make sure that we don't go ahead and attack and assassinate at the same time
+the first thing I want to do is actually first of all change the key so for the
+assassinations it will actually be the left so the right Mouse button and the
+normal combos will be on the left Mouse button so we'll just change a bit the assassination input
+um of course this is just personal preference but we'll do so like that and then also we'll go ahead and change the
+radio so it's a bit more behind and smaller so we only can even assassinate when we are just in his back so to do
+this we just gonna go into the third person folder input and then in the collection we can just go into the
+Assassin and here instead of using the left Mouse button we can just press disk icon over here and then in your mouse is
+press the right Mouse button and there we go now it will go ahead and change another thing that we have to do is now
+change the UI because it was saying you know left Mouse so I just go into UI in the ssna blueprint just go ahead and
+widget sorry just open it select the text and then instead of M just go ahead
+and replace that with an r and that's it we can just go ahead and compile unsafe
+great so now we have to do is select the um dummy over here and then say Ctrl e
+so it will just directly open the blueprint great so now we're going to do is go to the viewport and select the uh where I
+said the assassination radius and we're going to do is get the radius and make it way smaller okay let's make around 35
+and then go ahead and put it over here more into the enemies back it was
+already pretty decent uh you know in his back but we can basically make a bit smaller
+so now we will press play and go over here now we can attack without any problems okay and then uh it will not do
+both things but when I get into his back like really into his back I can now press the right Mouse button and
+assassinate him really cool okay we are having some cool things over here great one thing before actually
+continuing with the compass system let's go quickly into the third person character blueprint and I want to change
+only one thing and basically it's in the Crouch and some of you just let me know
+in the Discord that is better if we just instead of reversing it from the end just go ahead and reverse it by normal
+let's go ahead and change that so hold Ctrl and just put it up into reverse this is because if if we press quickly
+it could be Ctrl twice um it would not be like snapping into the end it will just continue from where
+it is it would just be a bit smoother so thanks for you know let me know in the Discord also you can guys go ahead and
+join the Discord server in order to you know ask any questions put your progress and so on okay now yes we can close this
+blueprint and also the dummy and what we have to do is go ahead and go into Blueprints and open the you know attack
+system component that we created earlier don't worry about this note I just basically was making a slow motion for
+the thumbnail so it's easier for me to take a Snapchat so yeah don't worry about that anyway so this is what we had
+in the last episode we'll build the combo system so now we basically have to make the
+um the trace okay basically the trace will consist of invisible
+um invisible capsules that will be placed exactly on the sword on the on
+the source plate so when you know the sword gets through it and it will detect
+the enemy and so on so what we're going to do is comment all this so select everything press C and
+this is going to be the combo system uh okay I just put it in all caps no
+combo system then let's put our presets it looks a bit nicer great let's go down
+over here let's right click and let's create a new custom event and this will be the start sword
+phrase and basically this is what we're gonna call from the animation Montage in order
+to begin our Trace okay so we want to do now is go and right click and create
+another custom event and this will be the sword Trace Loop so it will be basically the
+loop and which will be you know repeating itself once we are playing the animation
+so what we're going to do here is get this uh output or the delegate and just drag it over here and what we can do
+right now is just go ahead and call this which is set timer by event
+let's go ahead and out uh left click to remove the connection you just put it on the start sword Trace so
+basically we need to basically enable looping over here and put the time to be around 0.1 and we don't have to change
+any of the other settings so basically this is exactly what we did with the stamina system as you can see over here
+let me just open this just to Showcase you guys what we did here it's basically exactly the same we are repeating this
+event on all these things in this specific time uh it's gonna be just
+looping basically so we're doing exactly the same but with our sword Trace so
+here we want to make basically make a sword uh sorry sphere Trace by 10.
+okay and we'll go ahead and detect of the object and we are using a sphere Trace instead of a line Trace because it
+will just feel a bit better the you know the I guess the area The Sword and the shape and it will just be you know more
+convenient for us and we can tune it in so it's larger smaller so you can tune in the gameplay so it's easier to hit or
+harder to hit and so on so let's put the radius to be around 12 something like that and then what we have to do is
+basically get the starting point and the ending point let's go and compound save real quick and go into the third person
+guide to blueprint let's go ahead and open this eye let's go into the viewport and in the last episode we went ahead
+and added a sword so let's go ahead and put two pins on this sword so we know when uh what where
+is the position where we will start and finish so in this case it will be the tips so just go ahead and go into the sword
+right click on it sorry select the sword and up here into the components and
+search for an arrow and this will be the sword top
+point so this is where the top point of the trades will start another thing to build
+you know be able to go ahead and change the rotation and stuff of it let's go up
+here into the three points and disable real time so now we'll be paused so it's easier for us to change this so we have
+to do is just put this up here and to the tip of the sword and rotate this a bit so let me also enable snapping back
+again and let me just rotate it over here so it's facing that way really the rotation doesn't matter but I think it gets a bit
+you know cleaner honestly they just arrows pointing everywhere um so there we go you can see my exact
+and coordinates here it says around minus a hundred as you can see great and
+another thing that I have to do is duplicate this and this will be the sword button
+Point okay and basically we'll go ahead and put this at the start of the blade
+pretty much and now we can go ahead and rotate this back here and then put this
+let's change the this will be a five so it's a bit there we go so around here
+and then the top point I think we can manage to put it over here so minus 110. so there we go we have just the blade um
+so we have two points basically the top and the bottom point so basically our sphere Trace will be
+around in this two points so now we can use compile and save so
+let's go back into our attack system component and what we can do right now is go ahead and go into components and
+get the character mesh sorry now the character mesh we want the whole blueprint so what we can do is actually
+before we do the character mesh as we did in the last episode to get the well
+the mesh of the character we can also go ahead and just right click promote this to a variable and this will be the
+um basically the blueprint so character BP and let's go ahead and set this
+there we go so now what we can do is directly access the blueprint for from
+any time so we can just go here get it and then we can just get the top and
+sort top point and stuff so we're gonna do that so this will be the sword it will go
+down you'll see here the variables and then get a sword top point and what to
+do is just get the world location of this specific socket I just put it
+into the start and now we do exactly the same so get again the character blueprint and we will basically get the
+sword but bottom point this time go down here it is and then copy this node and
+paste it plug it in and this will be the end point basically our bottom point it
+doesn't matter the order you can do it the other way now but whatever and now we will go ahead and just draw a
+debug um so we can see how it looks so let's go into the fourth duration and put this to be 0.1 seconds
+and great so now we can actually start seeing how it looks so right now we have
+to call this so of course we'll call it from an animation notify from a name
+Montage so it will play exactly where we are Swinging The Sword but use the test real quick let's go into the attack
+input and just put here the start um short Trace which is right over here
+so we can see how it looks it's compound save go and press play and now you will see that if I attack we see the trace
+there we go so basically this will detect all of the objects that the
+sword will go through so when we get into our enemy we'll be able to deal damage if it goes through as you can see
+when it gets green is that it's detecting the something and you can totally play with the here
+with the two points with the radius to make it look how you want and
+and feel how you want and stuff okay so let's go ahead and delete that started sword Trace at the input because we
+don't need it we will create a any month uh notify sorry so this is exactly what we're going to do before we continue on
+so let's go back into the project um files over here and we're going to do is
+go into Blueprints and create a right click blueprint class and go into all classes over here and search for a name
+notify and this time instead of a a normal
+notify it will be basically a state so in the last episode we use uh you know no more notifieds for our combo but this
+time we'll use an NN notify state for this trace and you'll see the difference in a second let's go ahead and select it
+and this will be a BP underscore let's say oh my God they just saved okay BP
+let me rename this BP underscore notify underscore let's say a sword at race
+uh loop okay you can call it whatever you want let's go ahead and open this real quick
+so basically we will have the function over here that we can overwrite so basically we want to go into the
+received notify begin basically when the notify starts and then what to do is do
+a very similar thing that we did in the last episode for a combo which is get the mesh component and let's say get a
+owner right over here and now we can go and use this to cast to our third person
+character there you go plug this in so now we want to do is basically get the bpc
+um attack system component and now we can go ahead and call the start sort Trace
+there we go and now we will go ahead and just plug that into the return node over there and I will do the same for the uh
+stop so go into override and say receive notify end let's go real quick into the
+beginning and get this three notes so it's faster for us copy and just go to
+the end unplug this paste this put this over here
+there we go and now remember to get the mesh component and plug it into the get owner and here we have to create a new
+customer event so let's go quickly into the attack system component and now right over here let's go ahead and
+create a new custom event which in this case will be the uh basically stop
+sword Trace okay and now we want to do is basically
+you stop this timer so we'll do exactly what we did with the normal
+um with our stamina okay so basically we need to basically create this variable
+and then call this node over here so let's do the same let's go into the attack system go into the return value
+right click promote variable this will be the sword Trace Loop
+it doesn't Okay sword Trace Loop so we're all together
+great and now we can do is just get the sword Trace Loop down here the variable that we have described get it and then
+say clear and invalidate timer by handle and this will automatically you stop this Loop over here and now working is
+compound safe and go back into our notify and then just get it from our component and you say stop sort Trace
+and there we go we can just go ahead and get this plug it in and then go ahead and plug that in
+wait so now you will see that we can begin and start so probably using well in the last
+episode it was just a single pin there was no way of knowing if you know it was
+beginning or ending so that's the difference between a a notify and a stick so let me just show you what what
+I mean so let's go quickly into our attack animations so let's go into characters RPG character animations and
+then let's go ahead and go into the uh what's it sword attacks and we need to go into the montages so let's follow
+first of all into the attack one montage and you see a bit how it looks over here
+so basically we need to get the starting position of our attack so in this case you can see it will be around here so
+basically where the blade is starting to go and run so we are around in point 25 so I want to do is create another
+um no matter how how do you call it a selection of notified track I'm notified
+let's go here to tracks okay and add 95 track and those will be the sword trace
+and this is just to have everything a bit more organized let's go here right click and then go into add notify State
+and that you will find out here are BP notify a sword Trace Loop and now you'll
+see that we have in this case a start and end point in here it was just a
+starting point a single pin but in here we have a start and end point that's the
+difference between the state and the normal notifies so now here we can determine the start position and the end
+point so this is exactly what we're doing in the notify when he said star
+trades and stops trades so basically when the sword finishes the animation right over here kind of we will go ahead
+and put it here so the second pin so around 0.30 so it'll only be this
+fraction of the animation where the sword uh trades will be happening and
+then we'll finish as normally great so let's go ahead and do the same with the other animations now you will
+see with the Attack 2 it's a bit different it's more like ages steps into the character so the trace will be a bit
+different let's go ahead and skip that for one second and go directly into the attack 3. which is basically what it
+just goes ahead and launch this heavy attack which looks pretty cool so you have attack will kind of start
+over here I guess the sword Trace so again we can just go into the notifies and add a new track this will
+be the sword trace and then go over here right click and notify State and then
+our new thing and now we can find the end point which will be kind of over here
+we just landed so around 1.53 and I just drag it into there and there we go save
+it and close it and now again our last attack is a kick so we'll use the same
+system as the stabbing so it will be a bit different because in here well the sword would not do anything of course
+Okay so now it should be working so now as you can see the trace is not happening but
+when I start attacking okay sorry uh nothing is happening
+um so basically in the what is it here no in the combo
+no combo next now is uh blueprints here it is I'm gonna type trace and the
+notify uh begin and okay so in the begin yes we are
+getting this the component and the only sword a start Trace uh maybe I think
+that's because it's very fast this could be yes okay so you solve it there all right
+look see it's happening there so it was very fast so that was not issue and so let's
+go ahead and just do it a bit longer for this first attack animation RPG character animations uh sword
+attacks attack one so it's actually very fast so let's start a bit sooner I like
+Point 23 at this end a bit later like at 0.30 to so also we can go ahead and
+preview it another thing that we can do is go into the component and put the duration to be around uh point
+but 0.2 instead of 0.1 so be a bit longer
+and yes it's very hard to see but you saw it for one second there uh it's basically happening another thing that
+we can do is increase the loop so point zero zero one and and now it will be basically more accurate because it will
+be launching more cast you can see there we go so now it's a bit more accurate as you can see
+um which maybe is what we want maybe not but don't worry about that but yeah
+basically now it's happening and you can see this only happening while the fraction of the animation is is playing
+so this is exactly what we want great so there is a few more things that
+we have to do in order to continue of course so first of all before adding the damage
+and the hit animation to this guy and stuff we're gonna go ahead and do the
+stop trace and also the kick Trace so we'll use the same trace for it so let's
+go ahead and close this close this and go into the attack system component let's go ahead and select all this press
+C and this will be the sword race over here and we'll apply the preset into the
+comment there we go so everything is nice and organized put this over here let's go ahead and go right over here
+and create another custom event and this will be basically the sphere Trace
+it is a very bad name I don't know really how to call it it's just a general Trace in front of the player so
+we'll see if we change the name later on but basically we need to make a sphere Trace by Channel
+so what is it here and the starting point and the end point
+will be right in front of the player so you'll see what we'll do in a second now the radius let's say it's going to be
+around 25 because it's going to be a bit bigger and I say that we need to debug it for duration
+great so let's go quickly into the third person guide to blueprint which I I don't know why I'm always closer than an
+opening but here it is let's go into the viewport and we'll do exactly the same that we did with these sword let's go
+into the general top of the blueprint and the parent basically and just add another arrow and this will be the
+sphere phrase and now we can just get it and put it a bit forward
+and basically the sphere Trace will just appear there so it will just align real quick to
+where our sword is ending in this tab and where our kick is happening which is around here so we'll play with the
+values later on let's go ahead and compile and go back into our um component and now we can just get our
+character blueprint once again and then say get uh what was a sphere Trace
+let's go down and hear this so now we're going to get the wild location of it
+it's plug it into the start and into an end point because this is a sphere it doesn't matter because it has a radius
+so it can be the same and now what we need to do is uh well command this go
+ahead and disconnect this weird trace and let's put a parenthesis here essay for stab and kick so we just have it
+clear later on if we forget for what you know this was because the name is not very good let's see if later on I come
+up with a better name but great so now we have to call this so basically this
+will be a bit different because instead of a state it will be just a normal regular notify because I mean a stop
+it's just a step it's pretty quick and the kick is pretty much the same thing it's just kicking it's just happening
+once it's not like the blade that has to be the whole duration of it let's go back into the third person map
+content blueprints let's go create a new blueprint class all classes and then NM
+notify and this will be a normal Notifier selected and let's say BP underscore and notify
+underscore and this will be the sphere phrase let's go ahead and open this up put it
+over here and in functions go into overhead and received notify and do it exactly the same get the mesh component
+get the owner great and then we want to get this cast
+to the third person character and put this over here
+now what to do is basically get the bpc
+attack system component and then say the spear Trace so there we go
+let's put it over here and there we go great so everything is nice and clean so the only thing left is
+go into the animation so it's going to characters RPG animations and then in the sword attacks we can go into the
+attack too and then basically right where it stops so around
+around here kinda in point 40 we can go in to notify bracket and add notify and
+then it's gonna be the BB notified sphere trace and that's it save close it
+as you go back into the kick Montage I'll do the same thing go out right when it does the kick around in point 46
+let's go to the another face track add notify and then BP notified Spirit race
+and now if we press play we can go ahead that there you go there we go there we go so you can see that
+this field Trace is happening right at the point for so basically for the kick as you can see it's pretty good
+um but for the stab it's not the best place you can see it kind of goes
+through the player so let's go into the third person and just make this way
+forward now don't worry because basically this series of course is invisible and then it will go through
+the player so you will not notice it let's go ahead and now implement the damage into the enemy okay so let's go
+back into the attack system component and now we're just gonna put these field trace and to the right over here because
+we need some space in there for our damage so right when I do the loop and
+do these field trips we're gonna get the return value and make a branch so just making sure that we will only apply
+damage if we actually have detected an object let's go ahead and get the out hit and also break it
+and then extend it so we have all the parameters of the object that we have basically hit over here
+now we're going to make sure that we are only hitting the enemy so we're going to
+just is create a tag let's go over here into the third person map
+uh well basically use the Contour of row select our dummy and Ctrl e to open it
+up let's go into the class defaults and then go and search tag and you will see
+the actor tag let's go ahead and add a new one now this will be damageable
+there we go did I spell correctly I think so okay so basically this will be
+the attack that we will add to all the objects that we want to apply damage when we hit with our sword kicks or
+whatever so later on if you're gonna create new enemies or even just objects that you can destroy with your sword
+you'll basically add the damageable attack into the actor let's go ahead and compile and save and
+close it so now let's go back into the text system and then we will basically make an End
+condition so just get this and make an ant so basically we need to be able to hit with something and then make sure
+that the hit actor has the tag damageable
+and then plug that in so we'll basically only continue we have actually headed something and then it has the attack
+damageable great so now we're going to do is get the hit actor and then call
+the snow which is apply damage but now we will only continue uh and do it once
+so let's get it through and then do once because the thing is that this is a loop so it will play multiple times uh when
+our sword is swinging so we only want to do it once let's go and put it in the ones over here
+double click this to make it a bit more organized and put over there let's get
+this free trace for the build to the right there we go and then we'll uh basically apply damage over here so
+later on we will have a database with all our weapon damage and stuff when we
+get into the equipment but just for now going to school with for example 10 you just have a simple base damage to test
+our game and then we're going to do is make a delay and then we want to be able to you know put our
+um our do once to reset it because if not the next time that we go ahead and
+attack we will not apply damage so we have to reset this so we will apply a delay so this will be 0.5 yeah something
+like that so I get I completed and just put it in reset double click and then we
+can just put it in between this notes so it's a bit more organized and put this over here
+great so this will kind of be the delay just making sure that you know they do
+wants resets and we don't apply damage at 20 times uh with the same animation
+you know what I mean okay so that actually should work now we'll do exactly the same for our spear
+trades for the top so we can do is basically get all these notes
+okay so you just get everything cop control C to copied go here paste it and
+then we'll go ahead and put it here log it in and then get the return value plug
+it here get the out hit plug it here now we will not need to do once because this time this is not a loop this is just a
+single anime Notifier so we can delete this delete this pin the spin and the delay and it's directly plug in the
+applied damage over here and that's it we can now go ahead and compile and save but let's extend this comment so it's a
+bit more organized and there we go so that should be it if we have play
+and go over here and then go ahead and deal damage into it now there's no way
+that we're now going ahead and seeing this and also as you can see we have some errors over here in the branch
+um because yes oh sorry so we actually cannot use the Ant and the reason for
+this is that well maybe if we have not detected an object we are already
+checking what is that and tag for the option so basically we are accessing the
+object even though we have not detected any object so we need to delete this and plug the return value in here
+and then make another branch in the true with this one okay yeah so sorry about that I did not realize that until now so
+get this and deleted get the written value put over here and then enter we're going to make another Branch so it has
+to be separate and because of now we're accessing the actor even though we have not collided with anything so we were
+getting errors anyway so now in order to detect if we are colliding With the Enemy and a plane
+damage let's go and get the um enemy control e well the dummy for now let's go down over here and just go
+into the apply damage uh sorry no apply the dimensional event sorry right click event any damage so
+basically when this opted or actor in this case the dummy receives damage it will call this node so in here just to
+make sure everything is working let's go ahead and print use uh damage
+there we go so now we will see this printing on the screen so now if I go
+here uh so just take a look in the top left on the screen when I attack you can
+see damage there we go and it's happening back okay great so of
+course instead of damage we want to play our hit animation and all that cool stuff let's go into dummy and delete
+this string and what to do is get this and say play a name
+montage and now in here we need to pass our hit animation that we just imported earlier
+on so let's go back into our project files RPG character animations in the
+hit react let's select both right click and create an anim montage and there we
+go we have them in a montage so basically we're going to do to make things more Dynamic is play a random one
+depending on uh yeah basically a random one between the
+two so we're going to do is create a new variable and call this and hit and names
+and this will basically be animation month just to go and search for anime Montage object reference and now with
+the variables selected we go into variable type and put this to be an array so it will be a list of this uh
+variables so save the variable and then add two animations in this case it will be the
+hit react left and hit react right and now we can do
+is go here and get the hit and names get that and you say get a copy and now instead of
+accessing the copy 0 which in this case will be obviously the left Montage we
+can do is do a random integer in range the first point will be
+zero but the maximum point will be basically uh one so in this case we want
+to get the hit animes get it and then say get I get the length length
+and then basically decrease it by one
+because if not it will be getting one more so now there you go it will go and
+get a random animation from those both and then player video so we can go ahead
+and check it out so we go over here there you go now going ahead and okay
+the combo went pretty far there you go I believe it's playing a random one
+yes it's playing a random one great so you can see that it's happening now there's a few things that we have to do
+first of all let's add a knockback force to this character because right now is playing the hit animation but he's just
+standing still and looks a bit weird so we're gonna go into dummy back again and
+then we're gonna call this now which is launch character and this will basically just apply a
+force so one to do is I play a force towards the direction that the player uh
+basically yeah the player is actually attacking so and to do is first of all cast to the
+third person character and then the object will be the get player character
+so we'll be just accessing our player and now what to do is basically get the
+actor rotation and we'll find out the uh get for Vector
+so basically the direction that the uh player is looking and then we can do is just multiply this value and Commit This
+Vector into a float so it will be a nice number and now this will be around let's
+say 700. this defaults that it will go backwards and we say why we'll go
+backwards ball because normally our player when it's attacking it will be always looking towards the
+the enemy so it will push it back if it's facing us so let's go ahead and
+just plug it here into the launch velocity and that's pretty much it so now if I press play go over here
+we see then when I attack there we go it's going backwards slowly as you can see I'm dragging this guy backwards and
+it's really looking pretty cool okay so let's quickly go ahead and Implement a camera Shake because I have
+noticed that it has great Origins which is the game that we are referencing and basing this RPG Series has some tiny
+camera shake when we hit so it's a bit more satisfying let's go ahead and do that let's go into blueprints right
+click blueprint class let's go into all classes and search for camera Shake
+and there we go let's go down and you will see this Legacy camera Shake as selected
+this will be BP underscore camera as well what just happened oh my God I
+don't know why it's Auto saving every time I'm typing anyway let's rename this
+BP underscore Hit camera Shake
+well actually sword hit just in case is we will use another one for later on so
+we can now go ahead and open this uh sword hit a camera Shake blueprint and
+we'll basically change some of the options here so in oscillation duration we'll change it to be 0.15 because it
+will be a very very fast then we'll go into the rotation and we will change the pitch to be 1.2 and then
+in a frequency of 50 and it was just basically change a bit the rotation so it looks a bit nicer
+let's go ahead and open The Locomotion and I will go into the X Y and set and
+we'll apply some force in all the vectors the amplitude over here will be around let's say
+um one and then this will be 50. and then the initial offset we'll go ahead and basically put it at zero now the Y
+will go ahead and put this to be one and then the frequency at 50 and leave this random and then in the Z so and 1.2 and
+then 50 again and there we go so now it will just be applying some force in all the directions of the
+camera and now we're going to do is go ahead and we'll apply to the camera shake so
+let's go into the attack system and basically right when we hit you will need to go ahead and play this camera
+shake so let's take this a bit into the right over here let's put this note here as go ahead and
+write this and say play World camera Shake now the the class will be the one that
+we have just created sorry Hit camera check and the epicenter will be the location of the object that we have just
+hidden and I can double click to make things a bit cleaner and put this on the top let's say so it looks a bit nicer
+and then the outer radius will be how far away we want to be able to hear well not here not to play the camera Shake
+let's put something as 2000 okay it doesn't really matter because this is us for us to the player to feel the good
+feeling and the Innovative zero and everything as default great and we'll do exactly the same so copy
+this and go over here and play it right after in the normal uh sphere Trace
+and in our case we have we have copied we don't have to change anything but get the location to be over here let's go
+ahead and double click and put this up on here once again and compile and save
+and there you go so now if we press play and go into this guy there you go we
+have a really cool and simple camera Shake going on don't worry about that you go pop
+you know oh that feels so good so there we go so of course there's a lot of tuning in if you want in the
+future we can create a separate socket for the uh kick or whatever so it's a
+bit smoother but you can see there's really feeling pretty good and we are attacking towards it and it looks so cool and with the
+camera Shake filling it is really good like the combo is feeling incredibly nice okay so let's quickly go ahead and
+Implement some sounds so again I will be leaving them in the description so you
+can go ahead and load them let's go into the audio folder and let's create a new
+folder over here which will be basically um sword hits let's say okay you need to
+put in underscore let's enter here and let's open the folder go here and in my
+case is in Sword sounds and let's get all this once you drag them so again I
+will be leaving them in description as minimize this okay counter shift s to
+save everything great so basically we will need to play all these sounds so if
+we take a look and listen to them I don't know if you will hear them very good or not but
+foreign so we'll do is play all of them at the
+same time okay um yeah so we'll be playing them all the same time so let's go ahead and just go into the
+um attack system let's go over here and create a new custom event which will be play sword
+sword hit sounds and what to do is just drag this and say get sorry now play
+sound as the location the location will be
+well the actor itself so say yes get actor location as well you will need to
+get uh the owner so get owner and now we can get the get actor
+location from it if I know how to type okay I don't know how to type okay there
+we go okay so we're getting the location from the actor and then the alternation
+will be the character so we'll be playing a 3D space and the sound we want to play let's say that the
+um hit one so is the hit let's copy paste
+this then we'll play the hit 2 uh which is where is it oh a sword head
+wait which one okay hit sword hit let's selected here and put this Arrow okay
+and then lastly we have the sword hit two okay so play all them as
+once let's connect all these pins into here and then put a comment and play sword
+hit sounds put over here and the comment color will
+be our preset and now we need to call them of course so in here right after we play the camera shake it will do the
+play um sword hit sounds there we go let me put this here
+get this over here and then in here to do the play sword
+hit sounds and put it here okay now
+over here and now you'll hear the sounds okay
+so there's a few things that we can modify okay first of all
+I think this hit song doesn't sound very good actually so let's actually go ahead and skip this sound over here for now I
+don't think it looks pretty good but the other ones do sound pretty well I guess
+there you go okay I just emotion warped into my enemy okay so I think that we can do is again
+like with it in one of the last episodes with footsteps is make it Dynamic with
+basically uh a meta sound just quickly go ahead and do the right click go into
+sounds and we'll do a meta Sound Source and this will be Ms underscore sword hit
+and what we'll do R3 is play all of them in one let's open this get this and
+let's say play way player mono and in here we'll go ahead and play the
+first hit sound so in our case yes now this one is the sword hit let's go here unplug it and then the
+pitch let's go ahead and say random float and we'll go ahead and just plug into the next
+and into the next and it will be around from -3 to three so that would be kind
+of dynamic and we need to of course plug the mono here and the unfinished to here so now we can
+hit it and we're gonna even make it more Dynamic with -5 and 5.
+yes much better and another thing that we can go ahead and do is play them all at once
+so then we can just copy and paste this and put the on finish to just play the
+sound or actually on nearly finished let's see how that sounds and unfinished now we'll
+play the other one which is um basically sorted two so basically it will play all of them
+once and on here we're gonna plug two monos on here so we need to do is do
+this thing which is uh was Channel uh mono it was something of mono there
+we go mono makes her and in this case it will be two because we have both so we'll plug
+the output here and then one here and the other one here
+there we go so now [Music] no okay no no no it should be on play
+because now it sounds a bit weird basically and now [Music]
+thank you there you go you see how it sounds and we'll also get the pitch and just plug
+it on here so we get a value from there too [Music]
+oh yes sounding very good I don't know you can really hear it with the recording because I have the sound of
+the desktop a bit lower than my mic but it is sounding pretty good let's go back to the dummy and now what
+we can do is sorry got me not into the attack system and on here instead of doing all this messed up with it we can
+just call the meta sound now let's go quick into the meta sound and we'll go into the source attenuation and again
+for the character so remember to do the show and now back into the attack system we can just delete all of this mess over
+here and we can just go and search for the MS sort here and there we go
+so now it should sound much better than what we had in a few seconds ago so let's go here let's start attack
+[Music] oh yes oh that's so nice and it's quickly
+quickly go into dummy and apply a a grunt when it gets hit so let's go ahead
+and say play sound at location and then this will be uh what was the
+grunt or death or oh
+that too I think sounds pretty good and then when you say get actor location
+put it here and attenuation character
+and then the pitch actually we can also do the same with the method instead of the method sum we can do it here so
+Random floating range from -5 so what my
+three to five sorry three so I will do the same with the medicine but in the blueprint
+so look if I go here
+[Music] okay it is very very very um too much so minus 1.5
+to 1.3 it was do you see guys that was
+very deep [Music]
+Ah that's much better okay everything is going ahead and feeling so so good I'm
+liking how this turned out so of course we will need to make a tire lock and then we can maybe Dash a bit
+and then also play the blood effects so we will go ahead and do so uh let's see
+if we can do so in the next episode so we'll add the blood effects that we need maybe add two more sounds so it's a bit
+better and the target Aim so we can dodge this guy out and that and then
+later on we'll add the dash so we can uh basically yeah make a pretty cool combat
+system over there so that's it guys if you found it so helpful I would really appreciate if you like the video and
+subscribe to my channel I have lots of Unreal Engine fact tutorials so we're gonna go ahead and check them out go ahead join my Discord servers you can go
+ahead and share your progress with the RPG series or any game that you're making and also go ahead and ask any
+questions to me or other debts follow me on my social service Twitter and Instagram and now yes before
+
+what's up guys welcome to New Home view
+engine 5 tutorial and today we're going
+to continue with the RPG Series today
+we'll be finishing up the combat system
+and we will be implementing the blood
+effect so when we basically damage the
+enemy in this case they are dummy and
+then also we'll go ahead and actually
+use the player stats component that we
+created earlier on in the series and we
+will actually decrease the damage of the
+dummy and then we will also symbolize it
+in the health bar on top of his head so
+we can get things going already it's
+gonna be a very easy video to follow so
+let's get started
+all right so let's begin by actually
+adding the blood effect so what we're
+going to do is go ahead and get this
+free
+um effects package from the marketplace
+so I will be linking it downstairs
+totally free just add it to your library
+and then once you have it in your
+library you can say add to print so for
+now yes we're gonna be using this asset
+and you just have a SIM has a simple
+blood effect so it'll be great for us
+and later on maybe in the series we will
+create a more Dynamic blood effect but
+for now it will get things going and
+it's gonna be just better for us save us
+time and it looks pretty good so we're
+gonna be making use of this one so again
+I will be a link in description it's
+totally free so once that you have it in
+your library you can just go down insert
+it and then add it to the price and of
+course what you can do is search RPG
+basically the name of your pro that you
+do in the RPG series then add it to the
+print but there's a problem with this
+and the things that it will not only of
+course add the blood effect but it will
+basically import all of the effects so
+the problem with this is that basically
+time slowly you know it probably will
+start to fill up of junk okay that maybe
+wouldn't use never okay maybe later on
+you import another asset here and learn
+there and slowly it builds up into this
+huge Sprite so we need to do things
+properly
+so what I suggest doing is going ahead
+and import it in another project and
+then only migrating the blood effect and
+it will just keep things much cleaner
+and this is actually what is done when
+you actually make a I guess a good
+production game later on and use any
+asset okay so if you just want to skip
+this I will be living a timestamp right
+now in the screen so you can just skip
+into that part but I recommend that you
+fold this so it would just be a bit
+cleaner like I said it won't change
+anything on the episode it's just
+keeping things a bit neater so I'm gonna
+go ahead and import it
+into this Sprite over here and if you
+already have a product you can just
+import and use that go ahead but if now
+you can just go ahead and create a new
+product just import this asset let's go
+ahead and click add to print and of
+course you have to wait
+um a few seconds or however it takes
+it's only 200 megabytes so it shouldn't
+take a lot so once it is imported you
+can see that we have here the folder and
+all the the things basically so let's go
+ahead and enter and we will go into the
+particle section and you will see the
+first folder actually is blue now yes
+unfortunately it's using Cascades
+particle system so basically the old
+Unreal Engine
+um particle yeah system not Niagara but
+it doesn't matter it's just a simple
+blood effect don't worry if that in that
+case in the future we'll update the
+blood effect but for now it's just great
+for us so let's go and select the
+um the blood Cascade over here the
+effect right click and go into asset
+actions and I can go into this place
+which says migraine so I'm going to
+click it we save one to save don't worry
+about that and then it will
+automatically go ahead and select all
+the things that we need to import
+because of course it's not just this
+asset it's the textures of the blood is
+the particles and so on so this is
+exactly we want so you can see that
+that's only what we need there's nothing
+more of the engine or whatever we can
+say okay and now we have to go ahead and
+find
+our content folder of our RPG project
+the one that we're gonna migrate to so
+in my case it will be this one the rp30
+series underscore kit and then I can
+just go into the content folder right in
+the content folder I can say uh choose a
+folder and that's it it will go ahead
+and migrate
+you can see it's not uh already here if
+we go into particles load
+there we go it is here okay I don't know
+why you disappeared it shouldn't
+disappeared okay it's copying and
+pasting and it doesn't moving I don't
+know what happened but that's it so now
+I can just go into my RPG project you
+can see they have the folder here with
+the particle and now I can just go here
+and I have this Blood effect grid and
+now maybe you just drag it in the scene
+and don't see anything don't worry it is
+probably there we go compiling shaders
+so now it appears so I think it's
+working great and I'm gonna change the
+name and call this
+um basically
+FX so we have this a bit cleaner so we
+want to organize this very well okay so
+now that everything is imported we can
+go ahead and start just using the blood
+and spanning it when we damage the enemy
+so let's go into blueprints I'm gonna go
+into our bpc attack system okay our
+attack system component and here we have
+the combo and stuff and we want to go
+into the sword trace of course when we
+go ahead and detect the enemy and apply
+the damage so we're gonna get the sphere
+Trace mode a bit to the right and then
+extend this and then get the delay and
+put it so we're gonna go ahead and put
+it right after we play the canvas uh
+shake and the sounds okay we're gonna
+play it right over here so we want to do
+is get this and then spawn
+emitter at location okay and down here
+we can go ahead and find our blood
+vessel effect
+and now we can do is go ahead and get
+the location point so in our case I
+already have a point of here so I can
+just plug it in double click and put it
+right on top of here so it's nice and
+organized there we go so the location
+will be the same one as the camera Shake
+basically and then for the rotation we
+want to have a nice angle from when it's
+impacting for so for that we can use the
+normal so we can do is make a rotation
+from X and Y and then when I put the Y
+to be also the normal and now we have a
+nice rotation basically looking outwards
+of the mesh of the enemy so now we can
+just get the return value and just plug
+it into rotation over there and to keep
+things clear once again you can
+highlight this double click create the
+Ping and move it into the right so
+everything is nice and neat and then
+this scale we're going to drop this
+around 0.4 because you will see that is
+pretty big actually and lastly when I go
+into the pulling method method sorry and
+then say Auto release and now we can
+select this and copy it Ctrl C and then
+we're gonna go into their sphere trace
+and do exactly the same so I will play
+in our kicks and this time it's just at
+the end so paste it go put it here get
+our location once again and put it over
+here double click to to make a pin so
+it's cleaner and extend the comment and
+then in the rotation we'll do exactly
+the same if we want to just copy the
+node so make rotation from X and Y it's
+plug it here and plug the normal mode
+and both pins and now you can just plug
+in the rotation
+and double click to make a pin so it's
+nice and organize and there we go that's
+it so now we can actually compile and
+save to go ahead and test it so if I
+press play
+it can go into here
+we go nice pouting and I can go ahead
+and start hitting and you can see the
+blood starting to appear great so I
+think I'm gonna make I think it's time
+is to go ahead and start disabling the
+line traces because I think that we
+don't need them let's go back into the
+tech system and we're gonna go here and
+in uh draw debug type and say no and the
+same for the sphere trace and now we
+don't have this debug spheres going
+ahead and appearing and there you go now
+you can see the blood already appearing
+and it's looking pretty great of course
+you can go ahead and retouch the asset
+as you want so yeah but overall is
+looking great so we can go ahead and
+continue great so now what we want to do
+is go ahead and implement the Stat
+system that we created earlier which is
+this one into the dummy so we can
+actually decrease its damage and then
+when your zero you can die so later on
+when we make the actual enemy with the
+AI it will be easier for us because we
+have pretty much the whole system
+completed on the health and stuff
+so let's go ahead and select the dummy
+in the scene Ctrl e to open up the
+blueprint and now we need to do is go to
+the components section and add the bpc
+underscore player stats now let's hit
+enter and there we go so let's go into
+the event any damage that we created
+earlier on I'm gonna go into the end
+over here and just get the VPC player
+stats and drag this and say decrease
+health so now what we need to do is
+decrease the health so the what's going
+to be the amount well basically a real
+engine has other thing very good setup
+an organized so now we can have directly
+output over here so when we call it so
+now we're going to scatter damage that
+will receive and put it over here and
+now to make things prettier once again
+double click to make pins I always do
+this because it's just making things
+just look much better and now you can
+just go ahead and put it
+around here there we go looking great so
+now it will go ahead and decrease the
+health so now if we go and press play
+you will see what will happen so I
+started attacking and of course we don't
+have any helper so we cannot see this
+yet but when I go ahead and press exit
+you'll see a bunch of Errors you
+probably will be questioning what is
+happening well let me explain you what
+is happening let's go ahead and open the
+BBC Place test component
+and the thing is here is that well let's
+go into our decreased Health function
+and right where when we are decreasing
+Health we are trying to access the
+player's component and then going ahead
+and accessing the UI to the basically
+set the percent and so on but the
+problem is that well this is no longer
+the player it's right now on the dummy
+so it's basically just not getting this
+player and when it's calling the set
+percent it's getting an error so we have
+to change this so let's go ahead and
+start up by going into the event graph
+over here and in the beginning play you
+can see that we make a small delay and
+then we cast into the
+um third person character but in this
+case it will not be the third person
+character so in case that is not the
+third person character and we are in the
+dummy we'll go into the cast field
+so we need to do is get the owner copy
+and paste it over here and to do is go
+ahead and just cast to the uh dummy and
+then just get this cash failed and just
+plug it in so now if it's not the player
+it will go into the dummy and now we
+need to do as to put it up with the
+other one is save this as a variable
+just hit the dummy right click promote
+to variable and this will be basically
+the dummy blueprint and later on we'll
+do the same one we have the actual
+um AI enemy blueprint of course
+great so now we have that so another
+thing that we have to go ahead and do is
+of course do and change all these uh
+calls on this set percent so they can
+also work with dummy in case it is the
+dummy
+but let's get started by actually
+creating the UI for the dummy so what
+we're going to do is go here
+into the gun to browser and I go into
+the UI and you can see that we need to
+create a new uh basically new widget now
+let's go ahead and take a look real
+quick into the hot so basically we're
+going to be using the same design of the
+health bar pretty much the same so we
+can see that in X and Y we have 520 so
+that's going to be the same uh
+values that will be be using basically
+let's go back into the UI section over
+here let's right click and create a new
+user interface widget blooping let's go
+ahead and create a new user widget it's
+going to be WB underscore and this will
+be the dummy help bar okay
+let me help there we go let's go ahead
+and open this up let's put it here great
+so let's go into the palette and find a
+canvas panel and just drag it here so we
+can start placing and dragging our
+things so the only thing that we need to
+do is get the progress bar and drag it
+in here so let's go into the anchors and
+set it to be in the center and then in
+the position X and Y we go ahead and set
+a to zero so it'll be perfectly unzero
+but then in alignment we just add 8.5
+and 0.5 like with it with the other UI
+so this is exactly at the center and now
+as we saw with the other one we have to
+put 520 in X and Y so it will basically
+look really similar and there's like
+coherence in the design of the UI and so
+on you know of course it doesn't really
+matter small details but yes this model
+is improves overall everything and now
+as with it with the other widget we have
+to go into this Tau and apply the same
+um
+image so we'll look the same so let's go
+into the style let's begin with the
+background image and in here I think it
+was just called bar exactly it's bar and
+then we go into the fill image and do
+exactly the same Search for bar and put
+it here and now what we can do is to
+preview this we're going to put 8.7 for
+example and then we'll go ahead and
+change the color so it's exactly the
+same one let's go back into the widget
+and in fill color on opacity what we can
+do is go into the hex value select
+everything Ctrl C close this go back
+here and then open the fill color go
+into the uh
+opacity here or color not opacity and
+then paste it and now it will have the
+exact same color
+great so now we have the help bar
+created grid there's only one more thing
+that we have to do and as well do this
+okay let's go select the help part and
+name it pretty much exactly the same
+so in here
+and it's called just help bar okay so
+let's do the same
+let's go here select this health bar and
+then make sure that its variable is
+ticked I know another thing that we're
+going to do is also add this and
+basically text over here so we can see
+so in here it's basically called Health
+text
+so I believe that we can just copy and
+paste the whole component
+no we can't okay so we have to get the
+text
+and then change the name to be Health
+text
+without that symbol there we go and now
+let's try to match the same things the
+font is this both phone that we imported
+and then size 10. so size 10
+and then the font family will be the
+both name this one okay
+there we go and now we can just enter
+this again like we did with the other
+one set the position X and Y to zero and
+then the alignment 2.1 but first of all
+let's put this to be you know matching
+more the size and now it'll be better
+great point five and point five and that
+would be exactly the center now the
+alignment will also be in the center and
+now we can use test to put this as yeah
+70 also and now there we go it will be
+exactly pretty much like the other one
+that's it that's all that we have to do
+pretty much this is the text on this set
+is variable so we can access it from
+outside compile and save and now we are
+up to everything and we can close both
+widgets let's go into the diamond
+blueprint and go to the viewport and now
+of course we have to add this widget
+just go to the add components section
+and search for
+um for widget
+and it's going to be the first one and
+this will be basically the health bar
+widget and down here we can select the
+class to be the one that we have just
+created so the tummy health
+and then there we go so we can just go
+up here put it in the help bar well no
+on top of his head and then just yeah
+decrease the size so it matches a bit
+more of what we are going ahead and
+searching
+and I think that point one maybe is
+better
+or too small
+I kind of like 8.15
+I want five there you go
+let's see that's a bit better yeah I
+kind of like this okay
+uh so that's great I know I think that I
+noticed some of the comments said that
+instead of in the event take manually
+finding the player's camera and change
+the the rotation what what is looking we
+can just go into space and change this
+into screen
+and that should maybe
+change that
+yes okay but that's not what we're
+actually looking because okay Works yes
+but in this case we don't want that
+because it will just be always
+yeah no okay that's not like but great
+tip so let's go back into world and
+don't worry we'll do exactly the same so
+quickly do that go to the bank graph go
+up here
+let's put this here let's go to the
+ventec and we'll do pretty much exactly
+the same thing so we're gonna do is get
+the health bar drag it
+and then just get it and plug it into
+the target so now we'll move both
+components at the same time and now it
+will keep the same size and position
+there we go now the text is very small
+and stuff don't worry we'll change later
+but right now we have the health bar
+going on over there of course we now
+have okay I just jumped over my my uh
+dummy uh what we have to do right now is
+of course fix the areas that we're
+having and also so it will update the
+helper uh of course Okay so
+let's go ahead and do that so we're
+gonna go into the player stats and let's
+go into the bank graph
+so on here you can see that we're
+already setting some of the values over
+here okay so the only ones that we want
+is actually the max health and current
+health
+so we can do is a very intelligent thing
+instead of going ahead and setting all
+of this again let's go in here and use
+the select no
+okay so in here we can basically now
+choose the index to be a Boolean let's
+go ahead and right click and create a
+new variable so this will be is
+um
+is dummy we can say yes it's dummy okay
+actually not is player yes
+okay so
+if it's the player it will go ahead and
+output one specific Target
+but if not it will output another
+specific Target okay basically the
+the UI
+so in this case we can go into this
+health and just block the target to be
+this way instead
+so now here we can do is go and pass the
+true to be this one
+because now of course the the health bar
+is getting it from here so there we go
+we are getting the ones from the player
+if it's true but now we need to get the
+dummy under the other thing to get the
+dummy yes BP and I'll get the widget
+health bar okay
+and now yes it's X is in the widget
+let's go and get this move it down and
+now you can just get the variables that
+we created so in this case will be the
+health bar I guess it was yeah now here
+what we can do is not directly access
+so actually we're going to create a
+variable for it because now we need to
+cast let's go back to the dummy and go
+into the begin plate if it's not there
+we can just add it here so let's go and
+add the begin play and now we just need
+to get the health part drag it in and
+then say get widget
+it will access the class widget and now
+we can go ahead and cast into the
+specific class which was the dummy
+health and now we can save this as the
+um what was it I mean health bar widget
+I guess
+you can just call it that
+okay
+health bar UI
+held by UI okay so I will be saved as a
+variable compound save go back to the
+player's test and now instead of getting
+the exactly the wood to the queen is
+access to the variable
+so it will be the get helper UI and now
+yes we can get the help bar
+and now we can just plug the help part
+on the false and now it will depending
+on this variable change between the two
+and now we know how to create another
+set percent and all that stuff and now
+let's do exactly the same with the other
+uh set the text of the health so copy
+the
+these two notes copy paste it here then
+plug that into the target
+um
+yes we need to change the type so
+actually delete this
+make another select
+and then drag it so it basically is
+another type now is not Health Partners
+the text so disable the text here select
+everything go down put it on through
+and now we have to go ahead and do the
+same with the dummy so I'll get the
+dummy
+this time we have to get the text
+um
+the health bar
+sorry of course the UI first so why
+and now we can get the text okay so this
+case will be the health text just go
+ahead and just plug it over there so now
+we'll be exactly the same for the other
+one
+so now compile and save and there's one
+more thing left let's do the same bin
+decrease health so it's going to
+decrease health because it's what is
+giving us the year and we have to do
+that in here so really is just copying
+and pasting so really we just can copy
+all of this okay let's start with the
+percent it's going to decrease Health
+paste it now plug that into the Target
+and now you can get rid of the other
+ones over there nice and clean
+okay well nice and clean and also more
+notes at the same time but it's okay and
+now let's do the same with the text so
+also I'm gonna
+make it more spread so we have more
+space over here because the knot is very
+tight
+there we go
+okay uh and we need to delete this go
+back to the graph and then get this
+select notes for the text and then just
+go ahead and paste it simple as that
+great so this there's only one more
+thing left and it's of course setting
+this variable if it's the player or not
+so let's go into the event graph and
+let's go into the begin play
+and basically if we cast into the player
+and it succeeds it will go through here
+so we can just get the S player and then
+set it and this is put this over here
+smooth as a bit come on it's lagging so
+much no plug that in here and then it's
+true we need to ticket but then I'm
+gonna copy this and paste this and right
+after
+uh we cast the dummy we have to disable
+this because I'm not the player so now
+this should all work hopefully okay so
+let's go here
+there we go
+the the health bar is is working it
+updates great everything is working good
+cool and cool okay
+um great so I mean of course the enemy
+should start with a hundred of help
+let's go quickly into the damage and the
+dummy sorry and I'll go into the BBC
+stats component and now in Max Health
+we're getting well sorry couldn't help
+we can just put it into 100. and that's
+really a hope that it needs and later on
+we'll take use of levels so each anime
+will have its own level and so on
+and that's pretty much it
+um with that that should be all working
+and yes so there's only one more thing
+left and it's actually killing me the
+player okay so let's go into the dummy
+and sorry killing the Dummy from here it
+will give us the branch okay so make a
+branch if it's there so if it's dead we
+have to do is basically rag Dolly the
+the characters just go and get the mesh
+get this and then set simulate physics
+and now we can just take this and we'll
+just drag those into the floor now
+select the mesh and go down and make
+sure that yes query and physics is
+enabled we already did before for some
+reason maybe the assassination or yes
+the assassination already does rack
+though so that's great actually we do
+have a ragdoll
+um oh so we have a ragdo okay okay sorry
+sorry guys
+oh yes but after 2.5
+very a custom event
+but it has a delay
+yeah it doesn't matter we'll just
+play the the death sound then okay just
+plug that after that so we just copy the
+death sound and put it there so now it
+should just fall into the ground and
+just die okay so let's go here
+so right now we are dealing 10 of damage
+because it's for our sword currently
+does okay
+so of course I'm I don't have an auto
+Target right now hopefully we'll do it
+soon but there you go it racked those
+into the floor
+yeah great so nothing I'm going to do is
+disable the help part real quick so
+after the sound just get the helper
+Witcher and I set this ability to be
+false now another quick thing the last
+thing in this video is that uh I know
+this one thing
+and is that the health bar right now has
+a 0.7 of percent then it updates
+um so what is happening on the BBC stats
+is that of course it's not 70 because I
+forgot because I'm stupid no but I need
+to basically get this and drag it into
+this episode so we'll do both of that
+because if not it was not updated on the
+restart so that select that we did
+didn't work and actually we can skip
+this stamina we need that directly start
+in the health so skip this 10 minute go
+into the health
+uh might be a bit confusing but there's
+a lot of notes here
+um and then later on it gets to the XP
+so what you can do is only continue if
+we are the Players let's make some space
+and then now here right before uh the
+percent uh the XP and right after we
+finish with the both percentage of the
+health making a save it's player and if
+not it will stop uh so that's just a
+quick effects basically a quick patch so
+now you'll see that it has 100 and
+damage and now there we go
+continue like that and there we go and
+if we go it doesn't have any
+um errors or whatever
+so that's it guys if you found the
+tutorial helpful I really appreciate you
+could like the video and subscribe to my
+channel I have lots of Unreal Engine
+fact tutorials so if you want to go
+ahead check them out go ahead join my
+Discord service so you can show you the
+progress of the series or your game and
+also ask any questions and talk with
+tests such as me and also go ahead and
+follow me on my social studies Twitter
+and Instagram and we'll see in the next
+episode so uh probably in the next
+episode we'll go ahead and add a new
+voting
+um animation like a variant instead of
+jumping the whole thing just into the
+top there that a lot of people have
+requested that now maybe I change it I
+don't know depending on what I feel it's
+gonna be better for the next episode to
+advance
+um and then after that probably pretty
+soon we'll begin finally with the
+equipment and inventory system that I'm
+allowed to use have been waiting so yeah
+metric pressure for that and yeah maybe
+we go ahead and change up with the
+routing and we do first the auto aim
+lock and a kind of if I dodge okay so
+our combo will be kind of more even
+finalize pretty much the principles of
+it and so we'll see okay how it goes so
+that's the idea so you know to add a new
+vaulting option uh basically start with
+the equipment inventory and also add the
+turret lock and Dodge uh for the couple
+for the next couple of episodes okay so
+we'll see how it goes how I ordered them
+and so on of course it could totally
+change I don't know I'm just saying this
+because it will be cool if it was like
+that but we'll see so now yes I said
+like the video and subscribe and bye bye
+foreign
+[Music]

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk 'BEGIN{IGNORECASE=1} { lower=tolower\\($0\\); base=tolower\\($0\\); n=split\\($0,parts,\"/\"\\); fname=parts[n]; if \\(lower ~ /\\\\/anim/ || lower ~ /\\\\/animation/ || lower ~ /locomotion/ || lower ~ /lean/ || lower ~ /crouch/ || fname ~ /^as_/ || fname ~ /^abp_/ || fname ~ /^bs_/ || fname ~ /^am_/ || fname ~ /animmontage/ || fname ~ /animsequence/\\) print $0 }')",
+      "Read(//tmp/**)",
+      "Bash(awk -F/ '{NF--; print}' OFS=/ /tmp/anim_assets.txt)",
+      "Bash(awk -F/ '{ fname=$NF; if \\(fname ~ /^\\(AS_|ABP_|BS_|AM_\\)/ || fname ~ /AnimMontage|AnimSequence/\\) print }')",
+      "Bash(sort -k2)",
+      "Bash(awk 'BEGIN{IGNORECASE=1} { lower=tolower\\($0\\); n=split\\($0,parts,\"/\"\\); fname=parts[n]; lf=tolower\\(fname\\); if \\(lower ~ /\\\\/anim/ || lower ~ /locomotion/ || lower ~ /lean/ || lower ~ /crouch/ || lf ~ /^as_/ || lf ~ /^abp_/ || lf ~ /^bs_/ || lf ~ /^am_/ || lf ~ /anim/ || lf ~ /montage/\\) print $0 }')",
+      "Bash(awk -F/ '{print $\\(NF-1\\)\"/\"$NF}')"
+    ]
+  }
+}
