@@ -1,3 +1,20 @@
+# DungeonGame — Claude Code Game Studios Configuration
+
+**Engine:** Unreal Engine 5.7 | **Language:** C++ / Blueprint | **Studio framework:** Claude Code Game Studios v0.3
+
+## Coordination Rules
+@.claude/docs/coordination-rules.md
+
+## Collaboration Protocol
+@.claude/docs/collaborative-design-principle.md
+
+## Context Management
+@.claude/docs/context-management.md
+
+---
+<!-- Everything below is DungeonGame project-specific — do not remove -->
+
+
 # DungeonGame
 
 Unreal Engine 5.7 single-player third-person ARPG dungeon crawler.
