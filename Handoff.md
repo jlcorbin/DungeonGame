@@ -1,68 +1,85 @@
 ## What got done this session
 
-- Stamina drain bug resolved. Two root causes fixed:
-  (1) Sprint drain was applying regardless of movement —
-  replaced with 0.1s velocity-gated timer in
-  UDungeonGameplayAbility_Sprint. Standing still while
-  holding Shift no longer drains stamina.
-  (2) GE_AttackLightCost was modifying Stamina directly
-  with -15 — cleared from GA_AttackLight. Attacks have
-  no stamina cost by design.
+- Stamina drain bug resolved (velocity-gated sprint drain,
+  attack cost removed from GA_AttackLight)
+- 3-hit combo system complete (CC_Combo01-03 SingleSword,
+  UDungeonComboNextNotify/UDungeonComboEndNotify,
+  ActiveAttackAbility weak pointer on ADungeonCharacter)
+- Hit reaction system complete (Event.Damaged via
+  HandleGameplayEvent in PostGameplayEffectExecute,
+  UDungeonGameplayAbility_HitReact, GA_HitReact granted
+  to BP_DungeonTargetDummy, State.Dead blocks post-death
+  reactions, InitializeAbilitySystem now protected and
+  idempotent)
+- Enemy health bar C++ scaffolding complete
+  (UWidgetComponent HealthBarWidget on ADungeonTargetDummy,
+  GetHealthPercent() BlueprintPure, HandleOnDeath hides
+  widget, HealthBarZOffset = 120u default)
 
-- 3-hit combo system complete:
-  - New C++ classes: UDungeonComboNextNotify,
-    UDungeonComboEndNotify
-  - ADungeonCharacter gained ActiveAttackAbility
-    (TWeakObjectPtr) and NotifyComboNext/NotifyComboEnd
-  - UDungeonGameplayAbility_Attack gained ComboMontage01/02/03,
-    input buffer (bSavedAttack, bComboWindowOpen),
-    OpenComboWindow/CloseComboWindow/SaveAttackInput/StopCombo
-  - TryActivateAbilityByInputTag extended to forward to
-    AbilitySpecInputPressed when ability is already active
-  - SingleSword Combo01-03 montages wired with notifies,
-    DungeonAttackWindowNotifyState, Blend In/Out both 0
-  - Placeholder sword mesh on Weapon_R socket, rotation
-    (-80, 0, 0) on X
+## In progress — stopped here
+
+Enemy health bar editor wiring is incomplete.
+WBP_EnemyHealthBar widget exists in Content/Blueprints/UI/.
+Progress bar is in the designer.
+The binding function to update the bar is NOT working.
+
+### What was tried and failed
+- Get Owning Actor (Animation category) — wrong context,
+  expects AnimInstance
+- Get Owner (Components category) — wrong context,
+  expects ActorComponent
+- Both error with "self is not X therefore Target must
+  have a connection"
+
+### What to try next session
+The cleanest approach not yet attempted:
+In BP_DungeonTargetDummy Event Graph, on Event BeginPlay:
+- Get HealthBarWidget component (drag from Components panel)
+- Call Get User Widget Object on it
+- Cast to WBP_EnemyHealthBar
+- From the cast result, SET a variable on the widget
+  called DummyRef (type BP_DungeonTargetDummy)
+- Pass Self as the value
+
+In WBP_EnemyHealthBar:
+- Add variable DummyRef (type BP_DungeonTargetDummy,
+  Instance Editable)
+- In Progress Bar percent binding: get DummyRef →
+  Get Health Percent → return value
+- This avoids all owning actor lookup — the dummy
+  pushes itself into the widget
+
+The error on Get User Widget Object in the dummy's
+BeginPlay was that Target was unconnected — must drag
+HealthBarWidget FROM the Components panel, not use a
+self reference node.
 
 ## Current working state
 
-Refer to CLAUDE.md "Current state → Working" for full list.
-Key combat state: 3-hit sword combo deals AttackPower-scaled
-damage via DungeonAttackWindowNotifyState on each montage.
-Target dummy dies and plays death montage.
+- 3-hit sword combo working
+- Hit reactions on dummy working
+- Dummy dies correctly, no post-death animations
+- Health bar widget component exists and is positioned
+  above dummy head but shows no data yet
 
 ## Not yet built (priority order)
 
-1. Hit reactions — CC_GetHit01/02_SingleSword_Anim exist,
-   need Event.Damaged ability to trigger them on enemy
-2. Enemy health bar — world-space widget above target dummy
-3. Tag-driven AnimBP — ABP_NoWeapon reads locomotion state
-   but not gameplay tags yet
-4. Heavy attack
-5. Spells / ranged abilities
-6. Inventory and equipment
-7. Interaction system
-8. Enemies / AI
+1. Enemy health bar — editor wiring incomplete (see above)
+2. Tag-driven AnimBP
+3. Heavy attack
+4. Spells / ranged abilities
+5. Inventory and equipment
+6. Interaction system
+7. Enemies / AI
 
 ## Known issues / watch out for
 
-- ABP_NoWeapon post-process warning in montage editor
-  ("Post process Animation Blueprint is disabled") —
-  editor-only quirk, harmless in PIE
-- CC_OneHandAttackMontoge folder has a typo ("Montoge")
-  — it is the canonical location for SingleSword montages,
-  not a duplicate. Use these assets.
-- Timing notifies (1,2,3,4) on SingleSword montages cannot
-  be deleted — locked by the asset pack. Harmless.
-- ABP_NoWeapon has a cast to ADungeonCharacter in
-  BlueprintUpdateAnimation that logs "Accessed None" spam
-  — pre-existing issue, does not affect gameplay.
-  Fix eventually by ensuring the cast is guarded.
-
-## Next session start
-
-Pick up with hit reactions — when the player hits the dummy,
-the dummy should play CC_GetHit01 or CC_GetHit02 randomly.
-This requires an Event.Damaged gameplay event triggered
-ability on the dummy. The damage pipeline is already working
-so this is wiring the response, not the damage itself.
+- ABP_NoWeapon post-process warning in montage editor —
+  harmless editor quirk
+- CC_OneHandAttackMontoge folder has typo in name —
+  canonical location for SingleSword montages
+- Timing notifies on SingleSword montages cannot be
+  deleted — locked by asset pack, harmless
+- Get User Widget Object on HealthBarWidget needs the
+  component dragged from the Components panel, not a
+  self reference node
