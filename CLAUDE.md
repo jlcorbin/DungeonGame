@@ -152,6 +152,21 @@ Last updated: 2026-05-09
   InitializeAbilitySystem() to bypass the GetAvatarActor guard in
   ADungeonCharacter::BeginPlay. InitializeAbilitySystem is now protected
   and idempotent.
+- Enemy health bar functional. UDungeonEnemyHealthBarWidget
+  (DungeonEnemyHealthBarWidget.h/.cpp) is the C++ base class
+  for world-space enemy health bars. Exposes
+  InitializeForOwner(ADungeonCharacter*) which binds to the
+  owner's AttributeSet OnStatChanged delegate and calls the
+  UpdateHealth(float HealthPercent) BlueprintImplementableEvent
+  on each Health change. ADungeonTargetDummy calls
+  InitializeHealthBar() in BeginPlay, which casts the
+  WidgetComponent's user widget to UDungeonEnemyHealthBarWidget
+  and invokes InitializeForOwner(this). HealthBarWidget on
+  ADungeonTargetDummy uses World space with billboard facing
+  (always faces camera). WBP_EnemyHealthBar is reparented to
+  UDungeonEnemyHealthBarWidget — its Event UpdateHealth drives
+  the progress bar Set Percent. Bar displays above the dummy's
+  head and depletes correctly on hit.
 
 ### In progress / known issues
 
@@ -172,6 +187,25 @@ Last updated: 2026-05-09
 
 [Most recent first.]
 
+- 2026-05-09 Enemy health bar functional end-to-end. New C++
+  base class UDungeonEnemyHealthBarWidget
+  (DungeonEnemyHealthBarWidget.h/.cpp) — abstract UUserWidget
+  subclass for world-space enemy health bars. Public
+  InitializeForOwner(ADungeonCharacter*) stores a
+  TWeakObjectPtr to the owner, subscribes to AttributeSet
+  OnStatChanged, and pushes the initial percent through the
+  UpdateHealth(float HealthPercent) BlueprintImplementableEvent.
+  The Health branch in OnStatChanged recomputes
+  Health/MaxHealth and calls UpdateHealth on each change. On
+  ADungeonTargetDummy: new private InitializeHealthBar() casts
+  the WidgetComponent's user widget to
+  UDungeonEnemyHealthBarWidget and calls InitializeForOwner;
+  BeginPlay invokes it after InitializeAbilitySystem.
+  HealthBarWidget uses World space with billboard facing so
+  the bar always faces the camera. WBP_EnemyHealthBar
+  reparented to UDungeonEnemyHealthBarWidget — its Event
+  UpdateHealth drives the progress bar Set Percent. Bar
+  displays above the dummy's head and depletes on hit.
 - 2026-05-09 Hit reaction system complete.
   PostGameplayEffectExecute broadcasts Event.Damaged via
   direct HandleGameplayEvent call on the target ASC after

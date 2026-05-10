@@ -1,5 +1,6 @@
 #include "DungeonTargetDummy.h"
 #include "DungeonAttributeSet.h"
+#include "DungeonEnemyHealthBarWidget.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Components/CapsuleComponent.h"
@@ -16,7 +17,7 @@ ADungeonTargetDummy::ADungeonTargetDummy()
     HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarWidget"));
     HealthBarWidget->SetupAttachment(RootComponent);
     HealthBarWidget->SetRelativeLocation(FVector(0.f, 0.f, HealthBarZOffset));
-    HealthBarWidget->SetWidgetSpace(EWidgetSpace::World);
+    HealthBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
     HealthBarWidget->SetDrawSize(FVector2D(200.f, 25.f));
     HealthBarWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
@@ -26,6 +27,8 @@ void ADungeonTargetDummy::BeginPlay()
     Super::BeginPlay();
 
     InitializeAbilitySystem();
+
+    InitializeHealthBar();
 
     if (HealthBarWidget)
     {
@@ -72,4 +75,19 @@ float ADungeonTargetDummy::GetHealthPercent() const
         }
     }
     return 1.f;
+}
+
+void ADungeonTargetDummy::InitializeHealthBar()
+{
+    if (!HealthBarWidget) return;
+
+    UUserWidget* UserWidget = HealthBarWidget->GetUserWidgetObject();
+    UDungeonEnemyHealthBarWidget* EnemyBar = Cast<UDungeonEnemyHealthBarWidget>(UserWidget);
+    if (!EnemyBar)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("EnemyHealthBar: widget is not a DungeonEnemyHealthBarWidget — check WidgetClass in BP"));
+        return;
+    }
+
+    EnemyBar->InitializeForOwner(this);
 }

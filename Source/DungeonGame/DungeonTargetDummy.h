@@ -33,4 +33,7 @@ protected:
 
     UFUNCTION()
     void HandleOnDeath(AActor* Killer);
+
+private:
+    void InitializeHealthBar();
 };
