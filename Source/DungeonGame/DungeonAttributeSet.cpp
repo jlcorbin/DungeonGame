@@ -77,6 +77,14 @@ void UDungeonAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCal
         SetHealth(NewHealth);
         OnStatChanged.Broadcast(GetHealthAttribute(), NewHealth);
 
+        FGameplayEventData EventData;
+        EventData.Instigator = SourceActor;
+        EventData.Target = GetOwningActor();
+        EventData.EventMagnitude = LocalDamage;
+
+        GetOwningAbilitySystemComponentChecked()->HandleGameplayEvent(
+            DungeonGameplayTags::Event_Damaged, &EventData);
+
         if (NewHealth <= 0.f && !bDeathBroadcast)
         {
             bDeathBroadcast = true;

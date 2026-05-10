@@ -143,6 +143,15 @@ Last updated: 2026-05-09
   (no UDungeonAnimInstance class was created). Slot 'DefaultSlot' working —
   montages play visually. Camera zoom-into-head bug is resolved as a result.
   Old patched ABP retained as ABP_NoWeapon_Backup_DONOTUSE for safekeeping.
+- Hit reactions working on BP_DungeonTargetDummy. Every successful damage
+  hit fires Event.Damaged via HandleGameplayEvent in
+  PostGameplayEffectExecute. GA_HitReact (triggered by Event.Damaged)
+  randomly plays CC_GetHit01 or CC_GetHit02 NoWeapon montages. State.Dead
+  blocks GA_HitReact so no animations play after death.
+  ADungeonTargetDummy::BeginPlay explicitly calls
+  InitializeAbilitySystem() to bypass the GetAvatarActor guard in
+  ADungeonCharacter::BeginPlay. InitializeAbilitySystem is now protected
+  and idempotent.
 
 ### In progress / known issues
 
@@ -152,7 +161,6 @@ Last updated: 2026-05-09
   drive locomotion state from gameplay tags rather than animation events)
 - Heavy attack
 - Spells / ranged abilities
-- Hit reactions (Event.Damaged event-triggered ability)
 - Inventory and equipment
 - Interaction system
 - UI / HUD
@@ -164,6 +172,19 @@ Last updated: 2026-05-09
 
 [Most recent first.]
 
+- 2026-05-09 Hit reaction system complete.
+  PostGameplayEffectExecute broadcasts Event.Damaged via
+  direct HandleGameplayEvent call on the target ASC after
+  each successful IncomingDamage hit. New
+  UDungeonGameplayAbility_HitReact triggers on Event.Damaged,
+  randomly picks CC_GetHit01 or CC_GetHit02 NoWeapon
+  montages, ends on any montage completion. State.Dead added
+  to GA_HitReact Activation Blocked Tags to prevent
+  post-death animations. ADungeonTargetDummy::BeginPlay now
+  explicitly calls InitializeAbilitySystem() to ensure
+  ability grants on unpossessed pawns.
+  InitializeAbilitySystem moved to protected and made
+  idempotent.
 - 2026-05-09 3-hit combo system complete. New C++ AnimNotify
   classes: UDungeonComboNextNotify and UDungeonComboEndNotify.
   ADungeonCharacter gained ActiveAttackAbility

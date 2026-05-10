@@ -50,6 +50,12 @@ void ADungeonCharacter::InitializeAbilitySystem()
 {
     if (!AbilitySystemComponent) return;
 
+    if (AbilitySystemComponent->GetAvatarActor() != nullptr
+        && AbilitySystemComponent->GetActivatableAbilities().Num() > 0)
+    {
+        return; // already initialized
+    }
+
     AbilitySystemComponent->InitAbilityActorInfo(this, this);
 
     if (AttributeSet)

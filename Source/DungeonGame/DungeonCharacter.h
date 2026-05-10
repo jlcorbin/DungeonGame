@@ -85,8 +85,9 @@ protected:
     /** Creates and binds the HUD widget for locally controlled players. No-op for unpossessed pawns. */
     void InitializeHUD();
 
-private:
     void InitializeAbilitySystem();
+
+private:
     void GrantDefaultAbilities();
     void ApplyDefaultEffects();
 
