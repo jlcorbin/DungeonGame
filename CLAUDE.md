@@ -152,21 +152,9 @@ Last updated: 2026-05-09
   InitializeAbilitySystem() to bypass the GetAvatarActor guard in
   ADungeonCharacter::BeginPlay. InitializeAbilitySystem is now protected
   and idempotent.
-- Enemy health bar functional. UDungeonEnemyHealthBarWidget
-  (DungeonEnemyHealthBarWidget.h/.cpp) is the C++ base class
-  for world-space enemy health bars. Exposes
-  InitializeForOwner(ADungeonCharacter*) which binds to the
-  owner's AttributeSet OnStatChanged delegate and calls the
-  UpdateHealth(float HealthPercent) BlueprintImplementableEvent
-  on each Health change. ADungeonTargetDummy calls
-  InitializeHealthBar() in BeginPlay, which casts the
-  WidgetComponent's user widget to UDungeonEnemyHealthBarWidget
-  and invokes InitializeForOwner(this). HealthBarWidget on
-  ADungeonTargetDummy uses World space with billboard facing
-  (always faces camera). WBP_EnemyHealthBar is reparented to
-  UDungeonEnemyHealthBarWidget — its Event UpdateHealth drives
-  the progress bar Set Percent. Bar displays above the dummy's
-  head and depletes correctly on hit.
+- Enemy health bar: displays above dummy head, depletes on hit,
+  hides on death. UDungeonEnemyHealthBarWidget C++ base class,
+  WBP_EnemyHealthBar reparented to it, world-space billboard facing.
 
 ### In progress / known issues
 
@@ -180,6 +168,25 @@ Last updated: 2026-05-09
 - Interaction system
 - UI / HUD
 - Enemies / AI
+
+Combat polish:
+- Knockback on hit (LaunchCharacter impulse away from attacker)
+- Camera shake on hit
+
+Audio:
+- MS_Footstep MetaSound (randomized pitch) — notifies on run, sprint, jump-land
+- MS_SwordHit MetaSound — triggered on attack hit contact
+- SA_CharacterSounds attenuation asset — 3D spatial audio
+- SC_Grunt sound queue — plays on enemy death
+- Level-up sounds — two sounds on level-up event
+
+Combat systems:
+- Target lock system (Tab) — UDungeonTargetLockComponent, camera locks
+  onto Damageable-tagged actor, no visual indicator yet
+- Directional dodge — GA_Dodge rewrite, 4 montages (FWD/BWD/LFT/RGT)
+  from local-space velocity, State.Dodging blocks re-entry,
+  cancels active attack. Montages to assign:
+  AS_RollFWD/BWD/LFT/RGT_Battle_InPlace_SingleSword
 
 ---
 
@@ -316,23 +323,21 @@ Last updated: 2026-05-09
 
 ## Next session: where to pick up
 
-1. Damage pipeline editor wiring (Phase 1 + Phase 2):
-   - Create `GE_DefaultAttributes` (Instant, sets Health/MaxHealth, Mana/MaxMana,
-     Stamina/MaxStamina to starting values). Assign as `DefaultAttributesEffect`
-     on `BP_DungeonPlayerCharacter` and on the dummy BP below.
-   - Create `BP_DungeonTargetDummy` (subclass of `DungeonTargetDummy`),
-     assign mesh, set `DeathMontage`, set `DefaultAttributesEffect`.
-   - Drop a dummy into L_TestArena.
-   - Create `GE_DebugDamage` (Instant, modifies `IncomingDamage` by +25 or
-     similar). Assign as `DebugDamageEffect` on `BP_DungeonPlayerCharacter`.
-   - Create `IA_DebugDamage` Input Action and bind a key (e.g. K) in
-     `IMC_Default`. Assign as `DebugDamageAction` on `BP_DungeonPlayerCharacter`.
-2. Verify end-to-end: stand near a dummy, press the debug key, watch
-   Health drop in the AbilitySystemDebug HUD or via PIE inspection.
-   Confirm OnDeath fires once and the dummy plays DeathMontage + drops
-   collision at 0 HP.
-3. Strip the debug damage scaffolding (DebugDamageAction, DebugDamageEffect,
-   OnDebugDamage handler, related logs) once verified.
-4. Decide next: combo system (Pass 2 of light attack), heavy attack,
-   or hit reactions — light attack should now wire its damage GE
-   through the same IncomingDamage path verified by the debug key.
+### 1. Run the target lock + directional dodge CC prompt
+The full CC prompt is in the attached target_lock_dodge.md (Part 1).
+It creates:
+- UDungeonTargetLockComponent (toggle lock, sphere trace, tick rotation)
+- InputTag.TargetLock and State.Dodging tags
+- UDungeonGameplayAbility_Dodge rewrite (4 directional montages)
+- IA_TargetLock input wiring in ADungeonCharacter
+
+After rebuild, do the editor steps in target_lock_dodge.md Part 2
+(Steps 1, 2, 3 only — skip 4, 5, 6, no indicator widget for now):
+- Create IA_TargetLock input action, bind to Tab in IMC_Default
+- Wire IA_TargetLock in BP_DungeonPlayerCharacter event graph
+- Assign 4 roll montages in GA_Dodge class defaults
+
+### 2. After target lock + dodge verified, next systems in order:
+- Knockback on hit
+- Camera shake on hit
+- Then: AI enemy (first real enemy actor beyond the dummy)
