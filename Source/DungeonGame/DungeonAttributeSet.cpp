@@ -132,6 +132,19 @@ void UDungeonAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCal
             OnStaminaFull.Broadcast();
         }
     }
+    // Direct Stamina mods from Instant GEs: re-clamp and re-set Stamina to force
+    // a Current Value write that fires the GAS attribute-change delegate (the
+    // HUD listener). Meta-driven Stamina changes (IncomingStaminaDrain/Regen)
+    // handle this in their own branches above. Health uses the IncomingDamage
+    // meta-attribute pattern because damage needs source-actor resolution and
+    // invulnerability gating; Stamina has no equivalent gate, so a direct
+    // clamp is sufficient here.
+    else if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
+    {
+        const float ClampedStamina = FMath::Clamp(GetStamina(), 0.f, GetMaxStamina());
+        SetStamina(ClampedStamina);
+        OnStatChanged.Broadcast(GetStaminaAttribute(), ClampedStamina);
+    }
     else if (Data.EvaluatedData.Attribute == GetXPAttribute())
     {
         OnStatChanged.Broadcast(GetXPAttribute(), GetXP());

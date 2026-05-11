@@ -5,6 +5,7 @@
 #include "DungeonGameplayAbility_Attack.h"
 #include "DungeonGameplayTags.h"
 #include "DungeonHUDWidget.h"
+#include "DungeonTargetLockComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -17,6 +18,8 @@ ADungeonCharacter::ADungeonCharacter()
     AbilitySystemComponent->SetIsReplicated(false); // single-player
 
     AttributeSet = CreateDefaultSubobject<UDungeonAttributeSet>(TEXT("AttributeSet"));
+
+    TargetLockComponent = CreateDefaultSubobject<UDungeonTargetLockComponent>(TEXT("TargetLockComponent"));
 
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f);
@@ -148,6 +151,12 @@ void ADungeonCharacter::GrantDefaultAbilities()
 void ADungeonCharacter::TryActivateAbilityByInputTag(FGameplayTag InputTag)
 {
     if (!AbilitySystemComponent || !InputTag.IsValid()) return;
+
+    if (InputTag == DungeonGameplayTags::InputTag_TargetLock)
+    {
+        if (TargetLockComponent) TargetLockComponent->ToggleLock();
+        return;
+    }
 
     for (const FGameplayAbilitySpec& Spec : AbilitySystemComponent->GetActivatableAbilities())
     {

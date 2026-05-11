@@ -11,6 +11,7 @@ class UAbilitySystemComponent;
 class UDungeonAttributeSet;
 class UDungeonGameplayAbility_Attack;
 class UDungeonHUDWidget;
+class UDungeonTargetLockComponent;
 class UGameplayAbility;
 class UGameplayEffect;
 
@@ -76,6 +77,9 @@ protected:
 
     UPROPERTY(VisibleAnywhere, Category = "GAS")
     TObjectPtr<UDungeonAttributeSet> AttributeSet;
+
+    UPROPERTY(VisibleAnywhere, Category = "Dungeon|Combat")
+    TObjectPtr<UDungeonTargetLockComponent> TargetLockComponent;
 
     UFUNCTION()
     virtual void HandleDeath(AActor* Killer);

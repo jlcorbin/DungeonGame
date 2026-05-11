@@ -22,6 +22,34 @@ C++ core with Blueprint subclasses. Uses Gameplay Ability System (GAS).
 
 ---
 
+## Game Identity
+
+**Working title**: Hub & Hollow
+**Genre**: Single-player third-person ARPG dungeon crawler
+**Engine**: Unreal Engine 5.7 — C++ core, Blueprint subclasses, GAS
+**Platform target**: PC (Steam) primary; mobile pre-designed in parallel (touch input + mobile-aware perf budgets)
+**Core loop**: Delve a hand-crafted dungeon → fight with snappy combo/dodge combat → extract loot → sell at town hub → upgrade → go deeper. Die before extracting and lose everything you didn't carry out.
+**Pillars**:
+1. Town is Sanctuary, Dungeon is Stakes
+2. Snappy Hands, Strategic Mind
+3. Discovery is the Reward
+4. Built to Grow
+
+**MVP scope** (required to ship):
+- 1 town hub: merchant, innkeeper, 2-3 NPCs
+- 1 dungeon, 3 zones (~25-35 hand-crafted rooms), 3 checkpoints
+- Combat re-tuned for snappy/forgiving feel (combo + dodge + stamina + hit-react)
+- 3 enemy archetypes + 1 lieutenant boss with AI and animations
+- Loot system: drops, inventory, 3 rarity tiers, flat gold values
+- Extraction mechanic: checkpoints + 1 emergency scroll per delve
+- Progression: gold → gear (3 tiers) + consumables
+- Light story spine: ~5 lore notes, 3 NPC dialogue states
+- Save/load (innkeeper or autosave on extract)
+- Main menu / pause / options
+- Touch input baseline: virtual stick + 3 on-screen buttons, mobile-aware UI scaling
+
+---
+
 ## REQUIRED: Read this file before starting any work
 
 Every Claude Code prompt and every Claude.ai chat working on this project must:
@@ -33,7 +61,9 @@ Every Claude Code prompt and every Claude.ai chat working on this project must:
 ### Companion docs
 - [ANIMATIONS.md](ANIMATIONS.md) — animation asset inventory with exact paths.
   Read before referencing any animation in editor walkthroughs or C++/BP work.
-- [Handoff.md](Handoff.md) — end-of-session handoff notes from 2026-05-09.
+- [Handoff.md](Handoff.md) — end-of-session handoff notes. Check date — may be stale.
+- [design/gdd/game-concept.md](design/gdd/game-concept.md) — authoritative game design concept.
+  Pillars, MVP scope, player profile, risks. Read for any design or scoping decision.
 
 ---
 
@@ -126,84 +156,51 @@ ModelingToolsEditorMode, GameplayAbilities, EnhancedInput
 
 ## Current state
 
-Last updated: 2026-05-09
+**As of 2026-05-10**
 
-### Working
-- Third-person camera with spring arm
-- Enhanced Input: WASD movement, mouse look, Space jump, Shift sprint, Z dodge,
-  LMB light attack
-- ASC + AttributeSet wired and initialized on possession
-- Death broadcast (OnDeath delegate)
-- Imported character mesh from CharacterCreator pack; locomotion plays through
-  the rebuilt ABP_NoWeapon, attack montage plays correctly via slot
-- Dodge ability — directional, 25 stamina cost, 0.8s cooldown, 0.5s i-frames
-- Light attack ability (Pass 1) — montage-driven, 15 stamina cost, no cooldown,
-  movement allowed during attack, dodge cancels attack, full activation pipeline
-  verified end-to-end
-- Light attack now applies AttackPower-scaled damage via the AttackWindow
-  anim notify on the combo01 montage; target dummy dies in 5 hits and plays
-  the death montage.
-- Sprint stamina drain is velocity-gated. GE_StaminaDrain is only applied
-  while GetVelocity().SizeSquared2D() exceeds MinMoveSpeedThreshold (default
-  100). Standing still while holding Shift does not drain stamina.
-- Attack (light) has no stamina cost. GE_AttackLightCost was cleared from
-  GA_AttackLight. Stamina is only consumed by sprinting.
-- 3-hit combo chain working. CC_Combo01-03 SingleSword montages chain via
-  input buffer. DungeonComboNextNotify opens the window,
-  DungeonComboEndNotify closes it. ActiveAttackAbility weak pointer on
-  ADungeonCharacter provides direct notify-to-ability dispatch. Blend In
-  and Blend Out both set to 0 on all three montages so animations play
-  from frame 0 and notifies fire while ability is active.
-- Placeholder sword mesh attached to Weapon_R socket, rotation
-  (-80, 0, 0) on X axis.
-- ABP_NoWeapon — rebuilt fresh from scratch, parented to default UAnimInstance
-  (no UDungeonAnimInstance class was created). Slot 'DefaultSlot' working —
-  montages play visually. Camera zoom-into-head bug is resolved as a result.
-  Old patched ABP retained as ABP_NoWeapon_Backup_DONOTUSE for safekeeping.
-- Hit reactions working on BP_DungeonTargetDummy. Every successful damage
-  hit fires Event.Damaged via HandleGameplayEvent in
-  PostGameplayEffectExecute. GA_HitReact (triggered by Event.Damaged)
-  randomly plays CC_GetHit01 or CC_GetHit02 NoWeapon montages. State.Dead
-  blocks GA_HitReact so no animations play after death.
-  ADungeonTargetDummy::BeginPlay explicitly calls
-  InitializeAbilitySystem() to bypass the GetAvatarActor guard in
-  ADungeonCharacter::BeginPlay. InitializeAbilitySystem is now protected
-  and idempotent.
-- Enemy health bar: displays above dummy head, depletes on hit,
-  hides on death. UDungeonEnemyHealthBarWidget C++ base class,
-  WBP_EnemyHealthBar reparented to it, world-space billboard facing.
+### Design documentation
+- `design/gdd/game-concept.md` — COMPLETE (Hub & Hollow concept, pillars, MVP scope, risks)
+- `design/gdd/systems-index.md` — NOT YET AUTHORED
+- System GDDs (combat, loot, AI, town hub, etc.) — NOT YET AUTHORED
+- Architecture Decision Records — NOT YET AUTHORED
 
-### In progress / known issues
+### What is built (C++ + editor)
+- GAS foundation: `DungeonAttributeSet`, `DungeonGameplayAbility`, `DungeonGameplayTags`, `DungeonGameInstance`
+- Character hierarchy: `ADungeonCharacter` (base), `ADungeonPlayerCharacter` (player), `ADungeonTargetDummy` (enemy stand-in)
+- Attributes: Health, MaxHealth, Stamina, MaxStamina, AttackPower, XP, MaxXP, Level, IncomingDamage (meta)
+- Ability base: `UDungeonGameplayAbility` with `InputTag` UPROPERTY, `TryActivateAbilityByInputTag` on character
+- **Light attack**: 3-hit combo chain, notify-driven attack windows, per-swing dedupe hit set, `State.Attacking` tag
+  - Files: `DungeonGameplayAbility_Attack`, `AnimNotify_AttackWindowOpen/Close`, `AnimNotify_OneHandComboEnd`
+- **Dodge**: `UDungeonGameplayAbility_Dodge` — directional (4 montages), i-frames via `State.Invulnerable` tag
+- **Sprint**: stamina-draining sprint, velocity-gated (only drains when moving)
+- **Hit reactions**: `UDungeonGameplayAbility_HitReact`, triggered by gameplay cue from damage pipeline
+- **Damage pipeline**: `GE_Damage` → `IncomingDamage` meta attr (positive = damage) → `PostGameplayEffectExecute` → Health; `State.Invulnerable` negates damage
+- **Target dummy**: `ADungeonTargetDummy` — static enemy, plays `DeathMontage`, disables capsule on death
+- **Enemy health bar**: `UDungeonEnemyHealthBarWidget` — floating widget above enemies
+- **HUD**: `UDungeonHUDWidget` — health/stamina/XP/level bars, bound to attribute change delegates
+- **Debug damage key**: `OnDebugDamage` on player, finds nearest `ADungeonCharacter` within 500u and applies `GE_Damage` (temporary scaffolding)
+- **BP layer**: `BP_DungeonPlayerCharacter`, `BP_DungeonGameMode`, test level, `IMC_Default`, `IA_*` input actions, `GE_*` gameplay effects
 
-### Not yet built
-- Tag-driven AnimBP enhancement (current ABP_NoWeapon plays montages via Slot
-  but does not yet read State.Attacking, State.Dodging, etc. — eventually
-  drive locomotion state from gameplay tags rather than animation events)
-- Heavy attack
-- Spells / ranged abilities
-- Inventory and equipment
-- Interaction system
-- UI / HUD
-- Enemies / AI
-
-Combat polish:
-- Knockback on hit (LaunchCharacter impulse away from attacker)
+### What is NOT yet built (MVP blockers)
+- Target lock system editor wiring — **NEXT UP**
+  - IA_TargetLock input action asset + IMC_Default binding (Tab key)
+  - Assign IA_TargetLock to BP_DungeonPlayerCharacter `TargetLockAction` UPROPERTY
+  - WBP_TargetLockIndicator Blueprint (reparent to `UDungeonTargetIndicatorWidget`, implement `SetLocked` visual)
+  - `UDungeonTargetLockComponent::ToggleLock` does not yet call `SetTargetLocked` on the locked actor — wire this notification up
+- Directional dodge editor wiring — **NEXT UP**
+  - Assign 4 roll montages (FWD/BWD/LFT/RGT) to `BP_DungeonPlayerCharacter` / GA_Dodge class defaults
+- Knockback on hit
 - Camera shake on hit
-
-Audio:
-- MS_Footstep MetaSound (randomized pitch) — notifies on run, sprint, jump-land
-- MS_SwordHit MetaSound — triggered on attack hit contact
-- SA_CharacterSounds attenuation asset — 3D spatial audio
-- SC_Grunt sound queue — plays on enemy death
-- Level-up sounds — two sounds on level-up event
-
-Combat systems:
-- Target lock system (Tab) — UDungeonTargetLockComponent, camera locks
-  onto Damageable-tagged actor, no visual indicator yet
-- Directional dodge — GA_Dodge rewrite, 4 montages (FWD/BWD/LFT/RGT)
-  from local-space velocity, State.Dodging blocks re-entry,
-  cancels active attack. Montages to assign:
-  AS_RollFWD/BWD/LFT/RGT_Battle_InPlace_SingleSword
+- Real enemy AI (AIController + perception + behavior tree) — currently using `ADungeonTargetDummy`
+- Loot system (drops, inventory, rarity tiers, gold economy)
+- Town hub (level, NPCs, merchant, innkeeper)
+- Extraction mechanic (checkpoints + scrolls)
+- Save/load
+- Main menu / pause / options
+- Touch input
+- Audio (all — unbuilt)
+- VFX (all — unbuilt)
+- Ranged combat, spells, heavy attack (Target tier, not MVP)
 
 ---
 
@@ -211,6 +208,53 @@ Combat systems:
 
 [Most recent first.]
 
+- 2026-05-10 Fixed Instant GE stamina changes not firing HUD delegate. PostGameplayEffectExecute now clamps and re-sets Stamina after any direct Stamina attribute change, forcing Current Value write and delegate broadcast.
+- 2026-05-10 Dodge launch velocity: LaunchCharacter in roll direction (DodgeLaunchSpeed 900.f), braking deceleration reduced during roll (DodgeBrakingDeceleration 2000.f) then restored. BrakingFrictionFactor zeroed during roll for natural coast.
+- 2026-05-10 Fixed UpdateControlRotation: replaced pitch-degree ZOffset with world-space vertical offset on target location. ZOffset default changed from 80.f to 60.f (now in cm, not degrees).
+- 2026-05-10 Fixed C2445 (TObjectPtr ternary in SelectMontage — added .Get()) and C4996 deprecation warnings (AbilityTags.AddTag → SetAssetTags) in Dodge, Attack, and Sprint abilities.
+- 2026-05-10 Target lock + directional dodge C++ scaffolding.
+  New `UDungeonTargetLockComponent` (DungeonTargetLockComponent.h/.cpp):
+  attached to `ADungeonCharacter` in constructor; `ToggleLock()`
+  sphere-traces 1000u from camera forward, radius 125, ECC_Pawn,
+  returns first hit actor tagged `Damageable`. While locked,
+  `TickComponent` calls `UpdateControlRotation` each frame —
+  computes look-at from owner to target, subtracts `ZOffset` (default
+  80.f) from pitch and clamps to [-80, 80], then `SetControlRotation`
+  on the player controller. `ToggleLock()` clears the target on
+  re-press. New `UDungeonTargetIndicatorWidget`
+  (DungeonTargetIndicatorWidget.h/.cpp): abstract `UUserWidget`
+  with a `SetLocked(bool)` BlueprintImplementableEvent — Blueprint
+  drives the visual. `ADungeonTargetDummy` gained a second
+  `UWidgetComponent TargetIndicatorWidget` attached above the health
+  bar (HealthBarZOffset + 30), World space, 80×80 draw size, plus
+  a `SetTargetLocked(bool)` BlueprintCallable that casts the user
+  widget to `UDungeonTargetIndicatorWidget` and forwards the call.
+  `HandleOnDeath` hides the indicator alongside the health bar.
+  `UDungeonGameplayAbility_Dodge` rewritten for directional rolls:
+  4 montage UPROPERTYs (FWD/BWD/LFT/RGT), `InstancedPerExecution`,
+  `State.Dodging` added to ActivationOwnedTags and
+  ActivationBlockedTags (re-entry blocked). `ActivateAbility` calls
+  `CancelAbilities` against `State.Attacking` to cancel a live
+  attack, applies `State.Invulnerable` loose tag, calls
+  `SelectMontage` (local-space velocity → atan2(Y, X) angle in
+  degrees → FWD/RGT/BWD/LFT bucket; near-zero velocity falls back
+  to BWD), plays the montage directly via
+  `GetMesh()->GetAnimInstance()->Montage_Play`, and sets timers
+  for invulnerability end and dodge end (uses montage
+  `GetPlayLength`). `EndAbility` override clears both timers and
+  removes the loose invulnerable tag. `ADungeonCharacter` gained
+  a `TargetLockComponent` UPROPERTY (created in constructor) and
+  an early-return branch in `TryActivateAbilityByInputTag` that
+  forwards `InputTag.TargetLock` to `TargetLockComponent->ToggleLock()`
+  instead of falling through to the ability spec loop.
+  `ADungeonPlayerCharacter` gained a `TargetLockAction` UInputAction
+  UPROPERTY, an `OnTargetLock` handler that calls
+  `TryActivateAbilityByInputTag(InputTag_TargetLock)`, and a
+  `SetupPlayerInputComponent` binding on Started trigger. New tags:
+  `InputTag.TargetLock`, `State.Dodging`. Editor wiring (IA_TargetLock
+  asset + IMC_Default binding, BP_DungeonPlayerCharacter
+  TargetLockAction assignment, WBP_TargetLockIndicator BP, GA_Dodge
+  4-montage assignment) is the next-session item.
 - 2026-05-09 Enemy health bar functional end-to-end. New C++
   base class UDungeonEnemyHealthBarWidget
   (DungeonEnemyHealthBarWidget.h/.cpp) — abstract UUserWidget
@@ -329,10 +373,10 @@ Combat systems:
 - 2026-05-04 Created UDungeonGameplayAbility_Attack (montage-driven via
   UAbilityTask_PlayMontageAndWait). Added State_Attacking tag, AttackLightAction
   input on player, and OnAttackLight handler that activates by InputTag_Attack_Light.
-- [DATE] Created UDungeonGameplayAbility base + UDungeonGameplayAbility_Dodge.
+- 2026-05-03 Created UDungeonGameplayAbility base + UDungeonGameplayAbility_Dodge.
   Added TryActivateAbilityByInputTag to ADungeonCharacter. Added DodgeAction
   binding to player.
-- [PRIOR DATE] Initial C++ scaffold: AttributeSet, Character, PlayerCharacter,
+- 2026-04-28 Initial C++ scaffold: AttributeSet, Character, PlayerCharacter,
   GameInstance, GameplayTags. Editor wiring: BP_DungeonPlayerCharacter,
   BP_DungeonGameMode, input assets, PlayerStart in test level.
 

@@ -10,7 +10,7 @@ UDungeonGameplayAbility_Attack::UDungeonGameplayAbility_Attack()
 {
     InputTag = DungeonGameplayTags::InputTag_Attack_Light;
 
-    AbilityTags.AddTag(DungeonGameplayTags::Ability_Attack_Light);
+    SetAssetTags(FGameplayTagContainer(DungeonGameplayTags::Ability_Attack_Light));
     ActivationOwnedTags.AddTag(DungeonGameplayTags::Ability_Attack_Light);
     ActivationOwnedTags.AddTag(DungeonGameplayTags::State_Attacking);
 

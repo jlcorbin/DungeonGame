@@ -52,12 +52,16 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     TObjectPtr<UInputAction> AttackLightAction;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    TObjectPtr<UInputAction> TargetLockAction;
+
     void OnMove(const FInputActionValue& Value);
     void OnLook(const FInputActionValue& Value);
     void OnSprintStart(const FInputActionValue& Value);
     void OnSprintEnd(const FInputActionValue& Value);
     void OnDodge(const FInputActionValue& Value);
     void OnAttackLight(const FInputActionValue& Value);
+    void OnTargetLock(const FInputActionValue& Value);
 
     UPROPERTY(EditDefaultsOnly, Category = "Movement")
     float WalkSpeed = 450.f;

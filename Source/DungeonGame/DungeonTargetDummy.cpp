@@ -1,6 +1,7 @@
 #include "DungeonTargetDummy.h"
 #include "DungeonAttributeSet.h"
 #include "DungeonEnemyHealthBarWidget.h"
+#include "DungeonTargetIndicatorWidget.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Components/CapsuleComponent.h"
@@ -20,6 +21,13 @@ ADungeonTargetDummy::ADungeonTargetDummy()
     HealthBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
     HealthBarWidget->SetDrawSize(FVector2D(200.f, 25.f));
     HealthBarWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+    TargetIndicatorWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("TargetIndicatorWidget"));
+    TargetIndicatorWidget->SetupAttachment(RootComponent);
+    TargetIndicatorWidget->SetRelativeLocation(FVector(0.f, 0.f, HealthBarZOffset + 30.f));
+    TargetIndicatorWidget->SetWidgetSpace(EWidgetSpace::World);
+    TargetIndicatorWidget->SetDrawSize(FVector2D(80.f, 80.f));
+    TargetIndicatorWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ADungeonTargetDummy::BeginPlay()
@@ -62,6 +70,22 @@ void ADungeonTargetDummy::HandleOnDeath(AActor* Killer)
     if (HealthBarWidget)
     {
         HealthBarWidget->SetVisibility(false);
+    }
+
+    if (TargetIndicatorWidget)
+    {
+        TargetIndicatorWidget->SetVisibility(false);
+    }
+}
+
+void ADungeonTargetDummy::SetTargetLocked(bool bLocked)
+{
+    if (!TargetIndicatorWidget) return;
+
+    UUserWidget* UserWidget = TargetIndicatorWidget->GetUserWidgetObject();
+    if (UDungeonTargetIndicatorWidget* Indicator = Cast<UDungeonTargetIndicatorWidget>(UserWidget))
+    {
+        Indicator->SetLocked(bLocked);
     }
 }
 

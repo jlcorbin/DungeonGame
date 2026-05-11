@@ -13,7 +13,7 @@ UDungeonGameplayAbility_Sprint::UDungeonGameplayAbility_Sprint()
 {
     InputTag = DungeonGameplayTags::InputTag_Sprint;
 
-    AbilityTags.AddTag(DungeonGameplayTags::Ability_Sprint);
+    SetAssetTags(FGameplayTagContainer(DungeonGameplayTags::Ability_Sprint));
     ActivationOwnedTags.AddTag(DungeonGameplayTags::Ability_Sprint);
     ActivationOwnedTags.AddTag(DungeonGameplayTags::State_Sprinting);
 

@@ -5,6 +5,7 @@
 #include "DungeonTargetDummy.generated.h"
 
 class UAnimMontage;
+class UDungeonTargetIndicatorWidget;
 class UWidgetComponent;
 
 UCLASS()
@@ -19,6 +20,10 @@ public:
     UFUNCTION(BlueprintPure, Category = "UI")
     float GetHealthPercent() const;
 
+    /** Push lock state to the on-actor indicator widget. Caller is responsible for invoking on lock/unlock transitions. */
+    UFUNCTION(BlueprintCallable, Category = "Dungeon|Combat")
+    void SetTargetLocked(bool bLocked);
+
 protected:
     virtual void BeginPlay() override;
 
@@ -27,6 +32,9 @@ protected:
 
     UPROPERTY(VisibleAnywhere, Category = "UI")
     TObjectPtr<UWidgetComponent> HealthBarWidget;
+
+    UPROPERTY(VisibleAnywhere, Category = "UI")
+    TObjectPtr<UWidgetComponent> TargetIndicatorWidget;
 
     UPROPERTY(EditDefaultsOnly, Category = "UI")
     float HealthBarZOffset = 120.f;

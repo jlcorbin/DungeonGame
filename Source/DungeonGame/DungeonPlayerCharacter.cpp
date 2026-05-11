@@ -69,6 +69,10 @@ void ADungeonPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
         {
             EIC->BindAction(AttackLightAction, ETriggerEvent::Started, this, &ADungeonPlayerCharacter::OnAttackLight);
         }
+        if (TargetLockAction)
+        {
+            EIC->BindAction(TargetLockAction, ETriggerEvent::Started, this, &ADungeonPlayerCharacter::OnTargetLock);
+        }
     }
 }
 
@@ -115,4 +119,9 @@ void ADungeonPlayerCharacter::OnDodge(const FInputActionValue&)
 void ADungeonPlayerCharacter::OnAttackLight(const FInputActionValue&)
 {
     TryActivateAbilityByInputTag(DungeonGameplayTags::InputTag_Attack_Light);
+}
+
+void ADungeonPlayerCharacter::OnTargetLock(const FInputActionValue&)
+{
+    TryActivateAbilityByInputTag(DungeonGameplayTags::InputTag_TargetLock);
 }

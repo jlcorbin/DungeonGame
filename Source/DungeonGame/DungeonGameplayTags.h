@@ -9,6 +9,7 @@ namespace DungeonGameplayTags
     UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Stunned)
     UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Invulnerable)
     UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Attacking)
+    UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Dodging)
 
     // State tags - applied while something is happening (sprint group)
     UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Sprinting)
@@ -25,6 +26,7 @@ namespace DungeonGameplayTags
     UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Dodge)
     UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Attack_Light)
     UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Sprint)
+    UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_TargetLock)
 
     // Event tags - fired into abilities or broadcast generally
     UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Death)
