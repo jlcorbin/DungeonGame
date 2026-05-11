@@ -1,5 +1,6 @@
 #include "DungeonPlayerCharacter.h"
 #include "DungeonGameplayTags.h"
+#include "DungeonTargetLockComponent.h"
 #include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -73,6 +74,10 @@ void ADungeonPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
         {
             EIC->BindAction(TargetLockAction, ETriggerEvent::Started, this, &ADungeonPlayerCharacter::OnTargetLock);
         }
+        if (TargetSwitchAction)
+        {
+            EIC->BindAction(TargetSwitchAction, ETriggerEvent::Started, this, &ADungeonPlayerCharacter::OnTargetSwitch);
+        }
     }
 }
 
@@ -124,4 +129,17 @@ void ADungeonPlayerCharacter::OnAttackLight(const FInputActionValue&)
 void ADungeonPlayerCharacter::OnTargetLock(const FInputActionValue&)
 {
     TryActivateAbilityByInputTag(DungeonGameplayTags::InputTag_TargetLock);
+}
+
+void ADungeonPlayerCharacter::OnTargetSwitch(const FInputActionValue&)
+{
+    if (UDungeonTargetLockComponent* TLC = GetTargetLockComponent())
+    {
+        TLC->SwitchTarget();
+    }
+}
+
+void ADungeonPlayerCharacter::RegisterHUDWidget(UDungeonHUDWidget* Widget)
+{
+    HUDWidget = Widget;
 }

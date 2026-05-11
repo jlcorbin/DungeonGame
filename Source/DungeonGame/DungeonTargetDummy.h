@@ -5,7 +5,7 @@
 #include "DungeonTargetDummy.generated.h"
 
 class UAnimMontage;
-class UDungeonTargetIndicatorWidget;
+class UDungeonEnemyUIWidget;
 class UWidgetComponent;
 
 UCLASS()
@@ -20,9 +20,9 @@ public:
     UFUNCTION(BlueprintPure, Category = "UI")
     float GetHealthPercent() const;
 
-    /** Push lock state to the on-actor indicator widget. Caller is responsible for invoking on lock/unlock transitions. */
-    UFUNCTION(BlueprintCallable, Category = "Dungeon|Combat")
-    void SetTargetLocked(bool bLocked);
+    /** Returns the single combined enemy UI widget component. */
+    UFUNCTION(BlueprintPure, Category = "UI")
+    UWidgetComponent* GetEnemyUIWidget() const { return EnemyUIWidget; }
 
 protected:
     virtual void BeginPlay() override;
@@ -31,10 +31,7 @@ protected:
     TObjectPtr<UAnimMontage> DeathMontage;
 
     UPROPERTY(VisibleAnywhere, Category = "UI")
-    TObjectPtr<UWidgetComponent> HealthBarWidget;
-
-    UPROPERTY(VisibleAnywhere, Category = "UI")
-    TObjectPtr<UWidgetComponent> TargetIndicatorWidget;
+    TObjectPtr<UWidgetComponent> EnemyUIWidget;
 
     UPROPERTY(EditDefaultsOnly, Category = "UI")
     float HealthBarZOffset = 120.f;
@@ -43,5 +40,5 @@ protected:
     void HandleOnDeath(AActor* Killer);
 
 private:
-    void InitializeHealthBar();
+    void InitializeEnemyUI();
 };

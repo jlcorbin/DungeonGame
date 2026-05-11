@@ -176,9 +176,9 @@ ModelingToolsEditorMode, GameplayAbilities, EnhancedInput
 - **Hit reactions**: `UDungeonGameplayAbility_HitReact`, triggered by gameplay cue from damage pipeline
 - **Damage pipeline**: `GE_Damage` → `IncomingDamage` meta attr (positive = damage) → `PostGameplayEffectExecute` → Health; `State.Invulnerable` negates damage
 - **Target dummy**: `ADungeonTargetDummy` — static enemy, plays `DeathMontage`, disables capsule on death
-- **Enemy health bar**: `UDungeonEnemyHealthBarWidget` — floating widget above enemies
+- **Enemy UI widget**: `UDungeonEnemyUIWidget` — single combined world-space widget on `ADungeonTargetDummy` (one `UWidgetComponent EnemyUIWidget`). Handles health bar (`InitializeForOwner`, `UpdateHealth` BlueprintImplementableEvent, attribute delegate binding) and target-lock indicator (`SetTargetLocked` BlueprintImplementableEvent) in one class. Replaces the former `UDungeonEnemyHealthBarWidget` and `UDungeonTargetIndicatorWidget`.
 - **HUD**: `UDungeonHUDWidget` — health/stamina/XP/level bars, bound to attribute change delegates
-- **Target lock system**: `UDungeonTargetLockComponent` on `ADungeonCharacter`. RMB toggles, sphere-traces from camera forward (1000u radius 125, Pawn object query, requires `Damageable` actor tag). While locked, `TickComponent` updates controller rotation toward target each frame with world-space `ZOffset` (60.f default in cm) applied to target location before computing look rotation; pitch clamped ±80°. Lock auto-releases when target becomes invalid (e.g. death).
+- **Target lock system**: `UDungeonTargetLockComponent` on `ADungeonCharacter`. RMB toggles, sphere-traces from camera forward (1000u radius 125, Pawn object query, requires `Damageable` actor tag). While locked, `TickComponent` updates controller rotation toward target each frame with world-space `ZOffset` (60.f default in cm) applied to target location before computing look rotation; pitch clamped ±80°. Lock auto-releases when target becomes invalid (e.g. death). Lock/unlock state pushed to `UDungeonEnemyUIWidget::SetTargetLocked` via `ADungeonTargetDummy::GetEnemyUIWidget()` accessor.
 - **Directional dodge**: `UDungeonGameplayAbility_Dodge` rewritten for 4 directional montages (FWD/BWD/LFT/RGT) selected from local-space velocity. `LaunchCharacter` applies world-space momentum (`DodgeLaunchSpeed` 900.f, `DodgeBrakingDeceleration` 2000.f, `BrakingFrictionFactor` zeroed during roll, all restored in `OnDodgeEnd`). `State.Dodging` in `ActivationOwnedTags` blocks re-entry. Cancels active attack on activation. Camera-relative strafing movement enabled via `bOrientRotationToMovement=false`, `bUseControllerDesiredRotation=true`, `bUseControllerRotationYaw=true` on `BP_DungeonPlayerCharacter`.
 - **Camera-relative movement**: WASD now strafes relative to camera forward/right instead of rotating character to face movement direction.
 - **AnimBP locomotion stop interruptible**: Stop→Idle transition rule gated on (TimeRemaining ratio OR `bMontageActive` variable). `bMontageActive` is a thread-safe bool updated in `EventBlueprintUpdateAnimation` from `IsAnyMontagePlaying`. Interrupt Mode set to Automatic. Eliminates snap-back when dodging or attacking out of deceleration.
@@ -206,6 +206,248 @@ ModelingToolsEditorMode, GameplayAbilities, EnhancedInput
 
 [Most recent first.]
 
+- 2026-05-11 Reverted target lock indicators back to enemy-side widgets;
+  fixed the original occlusion issue. Several HUD-based diamond iterations
+  (ScreenPos BIE → BindWidget UImage refs → runtime WidgetTree FindWidget)
+  didn't land in WBP_HUD, so the indicators are back on each enemy's
+  world-space `UWidgetComponent`. UDungeonHUDWidget stripped of all
+  indicator logic: removed NativeTick, OnLockTargetChanged,
+  OnCandidatesChanged, GetNamedWidget, SetWidgetScreenPosition, the two
+  weak-pointer members, and all UMG/canvas/projection includes. Class
+  retains only the health/stamina/XP/level BIEs as a base for future HUD
+  work; .cpp is now a single include line. UDungeonEnemyUIWidget regained
+  `SetTargetLocked(bool)` and `SetTargetCandidate(bool)` BIEs.
+  UDungeonTargetLockComponent NotifyLockedState/NotifyCandidateState
+  bodies restored to the cast-through-widget pattern (Dummy →
+  GetEnemyUIWidget → cast user widget → SetTargetLocked/SetTargetCandidate)
+  and call sites re-wired: ToggleLock acquire (lock=true, candidate=false
+  on new target) and release (lock=false on outgoing), TickComponent
+  auto-clear-on-invalid branch (lock=false on LastLockedTarget),
+  HandleTargetDied (lock=false on dead, lock=true on auto-switched
+  successor), SwitchTarget (lock=false on old, lock=true and candidate=false
+  on new). UpdateCandidate gained per-actor enter/leave diff after the
+  set-change check — actors entering the candidate set get
+  `NotifyCandidateState(true)`, actors leaving get `NotifyCandidateState(false)`.
+  Multicast `OnLockChanged` and `OnCandidatesChanged` delegates kept on the
+  component as a public API for future consumers (no current bindings).
+  ADungeonTargetDummy constructor sets
+  `EnemyUIWidget->SetBlendMode(EWidgetBlendMode::Transparent)` and
+  `SetTwoSided(true)` — fixes the depth-masked occlusion that caused
+  diamonds to disappear behind enemy geometry at certain camera angles
+  (the original motivation for the HUD-overlay detour). ADungeonPlayerCharacter
+  RegisterHUDWidget body reduced to `HUDWidget = Widget;` — no delegate
+  bindings; `DungeonHUDWidget.h` include removed from the .cpp (forward decl
+  in the .h is sufficient now). Editor follow-ups: re-add or verify
+  WBP_EnemyHealthBar (or whichever WBP is reparented to UDungeonEnemyUIWidget)
+  has SetTargetLocked / SetTargetCandidate event-graph implementations
+  driving the diamond visibility/style.
+
+- 2026-05-11 HUD diamond lookup switched from BindWidget to runtime
+  WidgetTree lookup by name. BindWidget metadata wasn't resolving in WBP_HUD
+  (likely the widget hierarchy or rename history confused UMG's auto-bind).
+  Replaced the five `UPROPERTY(meta=(BindWidget))` UImage members with a
+  private helper `UWidget* GetNamedWidget(FName) const` that calls
+  `WidgetTree->FindWidget(WidgetName)`. NativeTick now resolves each diamond
+  on demand by name: "ImgDiamondLocked", "ImgCandidate0", "ImgCandidate1",
+  "ImgCandidate2", "ImgCandidate3" (stored as a static FName array for the
+  candidate slots). SetWidgetScreenPosition signature unchanged — it still
+  takes UWidget* and casts the Slot to UCanvasPanelSlot. Removed the
+  `UpdateLockIndicator` and `UpdateCandidateIndicator` BlueprintImplementableEvents
+  entirely — C++ now handles all positioning, sizing, and visibility; BP-side
+  non-positional effects (color, animation) are no longer hooked in. Includes
+  pared back: `Components/Image.h` and `Blueprint/WidgetTree.h` removed from
+  the header (no UImage refs there anymore); WidgetTree.h moved to the .cpp.
+  WBP_HUD setup requirement: diamond Images named exactly as the C++ FNames
+  above, parented to a Canvas Panel, anchors top-left (or 0.5/0.5 with a
+  half-size NativeTick offset for centered placement).
+
+- 2026-05-11 HUD diamond positioning moved fully to C++ via BindWidget. The
+  BIE-passes-ScreenPos approach in the previous iteration left positioning
+  to Blueprint and didn't reliably place images on the canvas. UDungeonHUDWidget
+  now exposes five `UPROPERTY(meta=(BindWidget))` UImage members
+  (`ImgDiamondLocked`, `ImgCandidate0..3`) — WBP_HUD must name its diamond
+  Images to match these property names so UMG auto-binds them at construction.
+  New private helper `SetWidgetScreenPosition(UWidget*, FVector2D ScreenPos,
+  bool bVisible, FVector2D Size)` toggles visibility
+  (HitTestInvisible/Hidden) and, when visible, casts the widget's Slot to
+  `UCanvasPanelSlot` and calls SetPosition + SetSize directly. NativeTick
+  now drives positioning through this helper (32x32 for the lock diamond,
+  24x24 for candidate diamonds — sized via file-scope `constexpr` constants).
+  Remaining BIEs `UpdateLockIndicator(bool bVisible)` and
+  `UpdateCandidateIndicator(int32 Index, bool bVisible)` lost the ScreenPos
+  parameter — they're now only for BP-side non-positional response (color
+  changes, animations). Includes added: `Components/Image.h` and
+  `Blueprint/WidgetTree.h` in the header; `Components/CanvasPanelSlot.h`
+  in the .cpp. WBP_HUD setup requirement: the diamond Images must live on
+  a Canvas Panel (root canvas works), the BindWidget property names must
+  match exactly, and anchors should be set to top-left (0,0) so
+  SetPosition places the widget at the projected screen point — or to
+  (0.5, 0.5) for centered-on-target if a per-frame half-size offset is
+  added in NativeTick.
+
+- 2026-05-11 HUD indicator tick logic moved fully into C++. UDungeonHUDWidget
+  now overrides NativeTick: each tick it projects LockedTarget to screen and
+  calls a new BIE `UpdateLockIndicator(bool bVisible, FVector2D ScreenPos)`,
+  then iterates fixed indices 0-3 calling
+  `UpdateCandidateIndicator(int32 Index, bool bVisible, FVector2D ScreenPos)`
+  for each slot (visible+positioned when CurrentCandidates has that index,
+  hidden otherwise). `OnLockTargetChanged` and `OnCandidatesChanged` are no
+  longer BlueprintImplementableEvents — they are now native handlers that
+  store into private `TWeakObjectPtr<AActor> LockedTarget` and
+  `TArray<TWeakObjectPtr<AActor>> CurrentCandidates` members. Delegate
+  binding in DungeonPlayerCharacter is unchanged (AddUObject works on both
+  BIE thunks and plain native methods). Removed the BlueprintCallable
+  `ProjectTargetToScreen` helper — the projection is now a private detail
+  of NativeTick. WBP_HUD only needs to implement the two new BIEs:
+  `UpdateLockIndicator` (drive Img_Diamond_Locked SetPositionInViewport +
+  SetVisibility) and `UpdateCandidateIndicator` (Select node on Index to
+  pick Img_Candidate_0..3, then SetPositionInViewport + SetVisibility).
+  No Blueprint Event Tick wiring needed.
+
+- 2026-05-11 Target lock indicators moved from world-space enemy widgets to
+  player HUD overlay via multicast delegate push. Architectural split: the
+  enemy widget is now health-bar-only; the HUD owns all lock + candidate
+  visuals; the lock component is the single source of truth and broadcasts
+  state changes. UDungeonTargetLockComponent gained two public multicast
+  delegates (`FOnLockChanged(AActor*)` and `FOnCandidatesChanged(const
+  TArray<AActor*>&)`) declared above the UCLASS, public delegate members
+  `OnLockChanged` / `OnCandidatesChanged`, and an inline getter
+  `GetCurrentCandidates()`. Replaced private `TObjectPtr<AActor>
+  CandidateTarget` with `UPROPERTY() TArray<TObjectPtr<AActor>>
+  CurrentCandidates`. Broadcast sites: `ToggleLock` (acquire fires
+  OnLockChanged(NewTarget); release fires OnLockChanged(nullptr) plus an
+  empty OnCandidatesChanged), `SwitchTarget` (OnLockChanged(NewTarget)),
+  `HandleTargetDied` (OnLockChanged(nullptr) on death + OnLockChanged(NewTarget)
+  on auto-switch + empty OnCandidatesChanged when CurrentCandidates was
+  non-empty), and `TickComponent` auto-clear-on-invalid branch (OnLockChanged
+  (nullptr)). `UpdateCandidate` rewritten to maintain `CurrentCandidates`
+  with order-independent set diff — broadcasts only when the set changes
+  (locked path: every in-range Damageable enemy minus the locked actor, no
+  cone; unlocked path: closest in-cone Damageable). Private
+  `NotifyLockedState` / `NotifyCandidateState` bodies replaced with no-op
+  comments (kept for now in case of future use; all internal call sites
+  removed). UDungeonHUDWidget (pre-existing — preserved UpdateHealth /
+  UpdateStamina / UpdateXP / UpdateLevel BIEs) gained two new
+  BlueprintImplementableEvents `OnLockTargetChanged(AActor*)` and
+  `OnCandidatesChanged(const TArray<AActor*>&)`, plus a BlueprintCallable
+  `ProjectTargetToScreen(AActor*, FVector2D& Out)` helper that wraps
+  `UGameplayStatics::ProjectWorldToScreen` with a 60u vertical offset for
+  BP to position screen-space reticles/diamonds. UDungeonEnemyUIWidget
+  lost `SetTargetLocked` and `SetTargetCandidate` BIEs (health bar pipeline
+  unchanged). ADungeonPlayerCharacter gained a public BlueprintCallable
+  `RegisterHUDWidget(UDungeonHUDWidget*)` that stores the widget in the
+  inherited `ADungeonCharacter::HUDWidget` protected member, defensively
+  unbinds priors, then binds the lock component's two delegates to the
+  widget's matching BIEs via `AddUObject` (BIE thunks resolve cleanly).
+  Editor follow-ups: (a) WBP_HUD needs `OnLockTargetChanged` and
+  `OnCandidatesChanged` event implementations, ticking `ProjectTargetToScreen`
+  per frame to position the lock reticle / candidate diamonds; (b)
+  WBP_EnemyHealthBar needs `SetTargetLocked` and `SetTargetCandidate` event
+  graph nodes deleted (events no longer exist on base); (c) BP_DungeonPlayerCharacter
+  must call `Register HUD Widget` after `Create Widget` + `Add to Viewport`
+  in BeginPlay — or move that call into C++ `InitializeHUD` if the BP wiring
+  is fragile.
+
+- 2026-05-11 Target lock candidate/camera tuning pass.
+  UDungeonTargetLockComponent::UpdateCandidate() now skips the dot-product
+  cone filter when LockedTarget is valid — every in-range Damageable enemy
+  (other than the locked one) shows as a candidate while locked. Cone filter
+  still applies when unlocked. Implementation also splits the per-actor path:
+  while locked, NotifyCandidateState(Actor, true) fires for every passing
+  actor in-loop and CandidateTarget is intentionally left untouched (the
+  per-frame call is idempotent on the widget side, and no diffing is needed
+  when every nearby enemy is a candidate). While unlocked, the original
+  closest-in-cone selection with CandidateTarget diffing is unchanged.
+  UDungeonTargetLockComponent::UpdateControlRotation() now computes look
+  rotation directly from OwnerLocation to TargetLocation with no camera
+  offset applied — LockCameraRightOffset/LockCameraUpOffset properties
+  retained on the component for later tuning but currently unused. Removes
+  the camera-side offset that was making the rotation look past the target.
+
+- 2026-05-11 Candidate evaluation now continues while locked.
+  UDungeonTargetLockComponent::UpdateCandidate() previously returned early
+  whenever LockedTarget.IsValid(), suppressing all candidate highlights while
+  any enemy was locked. Removed the early-return; replaced with a single
+  ExcludeFromCandidates pointer (= LockedTarget.Get() while locked, else
+  nullptr) checked inside the filter loop so the currently locked actor
+  cannot show as a candidate but every other in-cone Damageable pawn still
+  can. SwitchTarget() lost the stale "clear CandidateTarget so UpdateCandidate
+  re-evaluates next tick" block — it caused a one-frame flicker on the
+  newly unlocked actor and is unnecessary now that UpdateCandidate handles
+  the post-switch state naturally. Only remaining CandidateTarget-clearing
+  path inside UpdateCandidate is the PC/PlayerCameraManager null-safety
+  branch, which is correct (no camera = no cone math possible).
+
+- 2026-05-11 Target lock: death auto-switch, camera offset when locked, Tab
+  target switch. Refactored the inlined Dummy→GetEnemyUIWidget cast pattern
+  in ToggleLock and TickComponent into a new private helper
+  NotifyLockedState(AActor*, bool) mirroring NotifyCandidateState, so the new
+  HandleTargetDied and SwitchTarget paths reuse one consistent notify routine.
+  ADungeonCharacter gained OnTargetDied(AActor*) (forwards to TargetLockComponent
+  ->HandleTargetDied if present) and a public BlueprintCallable inline
+  GetTargetLockComponent() accessor. ADungeonTargetDummy::HandleOnDeath now
+  iterates ADungeonPlayerCharacter actors via TActorIterator and calls
+  OnTargetDied(this) on each — drives the auto-switch when a locked enemy
+  dies. UDungeonTargetLockComponent::HandleTargetDied(AActor*) clears the lock
+  on the dying actor, runs the same SphereOverlapActors+Damageable+dot-cone
+  pipeline UpdateCandidate uses but collects ALL survivors, sorts by squared
+  distance via Algo::Sort, and locks onto the closest survivor (lock stays
+  null if no candidates). UpdateControlRotation now offsets the look-at point
+  by camera-right * LockCameraRightOffset (default 150.f, EditDefaultsOnly)
+  and world-up * LockCameraUpOffset (default 50.f, EditDefaultsOnly) on top of
+  the existing target ZOffset, shifting the enemy left-of-center on screen so
+  the player remains visible. UDungeonTargetLockComponent::SwitchTarget()
+  (public) runs while locked: SphereOverlapActors 500u + Damageable filter
+  minus the current target (no cone filter so the player can reach enemies
+  behind them when only one exists), sorts ascending by squared distance, and
+  locks onto the closest other. ADungeonPlayerCharacter gained TargetSwitchAction
+  (EditDefaultsOnly UInputAction, Dungeon|Input category), OnTargetSwitch handler
+  (calls GetTargetLockComponent()->SwitchTarget() directly — bypasses ability
+  activation), and a Started-trigger binding in SetupPlayerInputComponent. New
+  tag InputTag.TargetSwitch added to DungeonGameplayTags.h/.cpp for future
+  ability-path consistency (not currently consumed). Editor follow-up:
+  create IA_TargetSwitch asset, bind Tab in IMC_Default, assign in
+  BP_DungeonPlayerCharacter; tune LockCameraRightOffset and LockCameraUpOffset
+  to taste in BP_DungeonPlayerCharacter target lock component defaults.
+
+- 2026-05-11 Target candidate detection added to UDungeonTargetLockComponent.
+  New SetTargetCandidate(bool bCandidate) BlueprintImplementableEvent on
+  UDungeonEnemyUIWidget — Blueprint drives the pre-lock highlight visual.
+  UDungeonTargetLockComponent gained CandidateTarget (TObjectPtr, UPROPERTY),
+  CandidateDotThreshold (EditDefaultsOnly, default 0.5 ≈ 60°), UpdateCandidate(),
+  and NotifyCandidateState(). TickComponent now calls UpdateCandidate() each tick
+  before the existing locked-target branch. UpdateCandidate uses
+  UKismetSystemLibrary::SphereOverlapActors (500u radius, ECC_Pawn) to collect
+  nearby actors, filters by Damageable tag and camera-forward dot product, and
+  picks the closest survivor; candidate is suppressed while a lock is active and
+  cleared with a false notification when a lock is acquired via ToggleLock.
+  NotifyCandidateState mirrors the existing Dummy→GetEnemyUIWidget cast pattern.
+  Includes added: Kismet/GameplayStatics.h, Kismet/KismetSystemLibrary.h.
+
+- 2026-05-11 Merged UDungeonEnemyHealthBarWidget and UDungeonTargetIndicatorWidget
+  into a single UDungeonEnemyUIWidget class. New files: DungeonEnemyUIWidget.h/.cpp —
+  UCLASS(Abstract, Blueprintable) UUserWidget subclass with InitializeForOwner
+  (attribute delegate binding + initial health push), UpdateHealth BlueprintImplementableEvent,
+  and SetTargetLocked BlueprintImplementableEvent. Deleted: DungeonEnemyHealthBarWidget.h/.cpp
+  and DungeonTargetIndicatorWidget.h/.cpp. ADungeonTargetDummy now has a single EnemyUIWidget
+  UWidgetComponent (Screen space, 200x80, attached at HealthBarZOffset) replacing the former
+  HealthBarWidget + TargetIndicatorWidget pair; SetTargetLocked actor method removed;
+  InitializeHealthBar renamed InitializeEnemyUI. New public BlueprintPure getter
+  GetEnemyUIWidget() on ADungeonTargetDummy exposes the component. UDungeonTargetLockComponent
+  now drives lock state via GetEnemyUIWidget() + Cast<UDungeonEnemyUIWidget> on all three
+  call sites (new-lock, manual-release, auto-release-on-invalid).
+- 2026-05-11 Target lock indicator notification wired.
+  UDungeonTargetLockComponent now calls ADungeonTargetDummy::SetTargetLocked
+  on lock/unlock transitions. ToggleLock casts LockedTarget to
+  ADungeonTargetDummy and pushes true on acquire / false on manual
+  release. New private UPROPERTY TObjectPtr<AActor> LastLockedTarget
+  tracks the previously-valid target so TickComponent can detect the
+  auto-clear-on-invalid path (target destroyed / weak ref invalidated)
+  and call SetTargetLocked(false) on the last-known dummy before
+  nulling both pointers. DungeonTargetDummy.h include added to the
+  component .cpp. WBP_TargetLockIndicator visual still pending —
+  Blueprint must reparent to UDungeonTargetIndicatorWidget and
+  implement the SetLocked event.
 - 2026-05-10 Target lock + directional dodge + camera-relative movement
   + stop-state interrupt + HUD stamina pipeline complete. New:
   UDungeonTargetLockComponent (RMB toggle, sphere trace, camera follow

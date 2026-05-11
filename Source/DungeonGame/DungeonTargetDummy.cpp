@@ -1,12 +1,13 @@
 #include "DungeonTargetDummy.h"
 #include "DungeonAttributeSet.h"
-#include "DungeonEnemyHealthBarWidget.h"
-#include "DungeonTargetIndicatorWidget.h"
+#include "DungeonEnemyUIWidget.h"
+#include "DungeonPlayerCharacter.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
+#include "EngineUtils.h"
 
 ADungeonTargetDummy::ADungeonTargetDummy()
 {
@@ -15,19 +16,17 @@ ADungeonTargetDummy::ADungeonTargetDummy()
     AIControllerClass = nullptr;
     AutoPossessAI = EAutoPossessAI::Disabled;
 
-    HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarWidget"));
-    HealthBarWidget->SetupAttachment(RootComponent);
-    HealthBarWidget->SetRelativeLocation(FVector(0.f, 0.f, HealthBarZOffset));
-    HealthBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
-    HealthBarWidget->SetDrawSize(FVector2D(200.f, 25.f));
-    HealthBarWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-    TargetIndicatorWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("TargetIndicatorWidget"));
-    TargetIndicatorWidget->SetupAttachment(RootComponent);
-    TargetIndicatorWidget->SetRelativeLocation(FVector(0.f, 0.f, HealthBarZOffset + 30.f));
-    TargetIndicatorWidget->SetWidgetSpace(EWidgetSpace::World);
-    TargetIndicatorWidget->SetDrawSize(FVector2D(80.f, 80.f));
-    TargetIndicatorWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    EnemyUIWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyUIWidget"));
+    EnemyUIWidget->SetupAttachment(RootComponent);
+    EnemyUIWidget->SetRelativeLocation(FVector(0.f, 0.f, HealthBarZOffset));
+    EnemyUIWidget->SetWidgetSpace(EWidgetSpace::Screen);
+    EnemyUIWidget->SetDrawSize(FVector2D(200.f, 80.f));
+    EnemyUIWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    EnemyUIWidget->SetBlendMode(EWidgetBlendMode::Transparent);
+    EnemyUIWidget->SetTwoSided(true);
+    EnemyUIWidget->SetWindowFocusable(false);
+    EnemyUIWidget->SetTranslucentSortPriority(100);
+    
 }
 
 void ADungeonTargetDummy::BeginPlay()
@@ -36,11 +35,11 @@ void ADungeonTargetDummy::BeginPlay()
 
     InitializeAbilitySystem();
 
-    InitializeHealthBar();
+    InitializeEnemyUI();
 
-    if (HealthBarWidget)
+    if (EnemyUIWidget)
     {
-        HealthBarWidget->SetRelativeLocation(FVector(0.f, 0.f, HealthBarZOffset));
+        EnemyUIWidget->SetRelativeLocation(FVector(0.f, 0.f, HealthBarZOffset));
     }
 
     if (UDungeonAttributeSet* AS = GetAttributeSet())
@@ -67,25 +66,18 @@ void ADungeonTargetDummy::HandleOnDeath(AActor* Killer)
         Capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     }
 
-    if (HealthBarWidget)
+    if (EnemyUIWidget)
     {
-        HealthBarWidget->SetVisibility(false);
+        EnemyUIWidget->SetVisibility(false);
     }
 
-    if (TargetIndicatorWidget)
+    // Notify all player characters so their target lock components can auto-switch
+    if (UWorld* World = GetWorld())
     {
-        TargetIndicatorWidget->SetVisibility(false);
-    }
-}
-
-void ADungeonTargetDummy::SetTargetLocked(bool bLocked)
-{
-    if (!TargetIndicatorWidget) return;
-
-    UUserWidget* UserWidget = TargetIndicatorWidget->GetUserWidgetObject();
-    if (UDungeonTargetIndicatorWidget* Indicator = Cast<UDungeonTargetIndicatorWidget>(UserWidget))
-    {
-        Indicator->SetLocked(bLocked);
+        for (TActorIterator<ADungeonPlayerCharacter> It(World); It; ++It)
+        {
+            (*It)->OnTargetDied(this);
+        }
     }
 }
 
@@ -101,17 +93,17 @@ float ADungeonTargetDummy::GetHealthPercent() const
     return 1.f;
 }
 
-void ADungeonTargetDummy::InitializeHealthBar()
+void ADungeonTargetDummy::InitializeEnemyUI()
 {
-    if (!HealthBarWidget) return;
+    if (!EnemyUIWidget) return;
 
-    UUserWidget* UserWidget = HealthBarWidget->GetUserWidgetObject();
-    UDungeonEnemyHealthBarWidget* EnemyBar = Cast<UDungeonEnemyHealthBarWidget>(UserWidget);
-    if (!EnemyBar)
+    UUserWidget* UserWidget = EnemyUIWidget->GetUserWidgetObject();
+    UDungeonEnemyUIWidget* UIWidget = Cast<UDungeonEnemyUIWidget>(UserWidget);
+    if (!UIWidget)
     {
-        UE_LOG(LogTemp, Warning, TEXT("EnemyHealthBar: widget is not a DungeonEnemyHealthBarWidget — check WidgetClass in BP"));
+        UE_LOG(LogTemp, Warning, TEXT("EnemyUIWidget: widget is not a DungeonEnemyUIWidget — check WidgetClass in BP"));
         return;
     }
 
-    EnemyBar->InitializeForOwner(this);
+    UIWidget->InitializeForOwner(this);
 }

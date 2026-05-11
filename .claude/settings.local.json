@@ -7,7 +7,11 @@
       "Bash(awk -F/ '{ fname=$NF; if \\(fname ~ /^\\(AS_|ABP_|BS_|AM_\\)/ || fname ~ /AnimMontage|AnimSequence/\\) print }')",
       "Bash(sort -k2)",
       "Bash(awk 'BEGIN{IGNORECASE=1} { lower=tolower\\($0\\); n=split\\($0,parts,\"/\"\\); fname=parts[n]; lf=tolower\\(fname\\); if \\(lower ~ /\\\\/anim/ || lower ~ /locomotion/ || lower ~ /lean/ || lower ~ /crouch/ || lf ~ /^as_/ || lf ~ /^abp_/ || lf ~ /^bs_/ || lf ~ /^am_/ || lf ~ /anim/ || lf ~ /montage/\\) print $0 }')",
-      "Bash(awk -F/ '{print $\\(NF-1\\)\"/\"$NF}')"
+      "Bash(awk -F/ '{print $\\(NF-1\\)\"/\"$NF}')",
+      "Bash(Remove-Item \"e:\\\\UE5 Projects\\\\DungeonGame\\\\Source\\\\DungeonGame\\\\DungeonEnemyHealthBarWidget.h\" -Force)",
+      "Bash(Remove-Item \"e:\\\\UE5 Projects\\\\DungeonGame\\\\Source\\\\DungeonGame\\\\DungeonEnemyHealthBarWidget.cpp\" -Force)",
+      "Bash(Remove-Item \"e:\\\\UE5 Projects\\\\DungeonGame\\\\Source\\\\DungeonGame\\\\DungeonTargetIndicatorWidget.h\" -Force)",
+      "Bash(Remove-Item \"e:\\\\UE5 Projects\\\\DungeonGame\\\\Source\\\\DungeonGame\\\\DungeonTargetIndicatorWidget.cpp\" -Force)"
     ]
   }
 }

@@ -4,6 +4,7 @@
 #include "DungeonCharacter.h"
 #include "DungeonPlayerCharacter.generated.h"
 
+class UDungeonHUDWidget;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
@@ -20,6 +21,13 @@ public:
 
     /** Read by UDungeonGameplayAbility_Sprint to restore movement speed when sprint ends. */
     float GetWalkSpeed() const { return WalkSpeed; }
+
+    /**
+     * Registers a HUD widget with this character and binds the target lock delegates.
+     * Call this after creating and adding the HUD widget to viewport.
+     */
+    UFUNCTION(BlueprintCallable, Category = "Dungeon|UI")
+    void RegisterHUDWidget(UDungeonHUDWidget* Widget);
 
 protected:
     virtual void BeginPlay() override;
@@ -55,6 +63,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     TObjectPtr<UInputAction> TargetLockAction;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Dungeon|Input")
+    TObjectPtr<UInputAction> TargetSwitchAction;
+
     void OnMove(const FInputActionValue& Value);
     void OnLook(const FInputActionValue& Value);
     void OnSprintStart(const FInputActionValue& Value);
@@ -62,6 +73,7 @@ protected:
     void OnDodge(const FInputActionValue& Value);
     void OnAttackLight(const FInputActionValue& Value);
     void OnTargetLock(const FInputActionValue& Value);
+    void OnTargetSwitch(const FInputActionValue& Value);
 
     UPROPERTY(EditDefaultsOnly, Category = "Movement")
     float WalkSpeed = 450.f;

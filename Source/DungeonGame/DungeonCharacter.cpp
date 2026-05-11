@@ -234,6 +234,14 @@ void ADungeonCharacter::NotifyComboEnd()
     }
 }
 
+void ADungeonCharacter::OnTargetDied(AActor* DeadActor)
+{
+    if (TargetLockComponent)
+    {
+        TargetLockComponent->HandleTargetDied(DeadActor);
+    }
+}
+
 void ADungeonCharacter::HandleDeath(AActor* Killer)
 {
     if (!AbilitySystemComponent) return;

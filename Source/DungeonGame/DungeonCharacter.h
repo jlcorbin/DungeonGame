@@ -29,6 +29,13 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Dungeon|Abilities")
     void TryActivateAbilityByInputTag(FGameplayTag InputTag);
 
+    /** Notifies the target lock component that DeadActor has died, so it can auto-switch. */
+    void OnTargetDied(AActor* DeadActor);
+
+    /** Returns the target lock component. Used by player input and Blueprint. */
+    UFUNCTION(BlueprintCallable, Category = "Dungeon|Combat")
+    UDungeonTargetLockComponent* GetTargetLockComponent() const { return TargetLockComponent; }
+
     /** Clear the per-swing hit set. Called by attack notifies at the start of an attack window. */
     UFUNCTION(BlueprintCallable, Category = "Combat")
     void BeginAttackWindow();

@@ -19,6 +19,7 @@ namespace DungeonGameplayTags
     UE_DEFINE_GAMEPLAY_TAG(InputTag_Attack_Light, "InputTag.Attack.Light")
     UE_DEFINE_GAMEPLAY_TAG(InputTag_Sprint, "InputTag.Sprint")
     UE_DEFINE_GAMEPLAY_TAG(InputTag_TargetLock, "InputTag.TargetLock")
+    UE_DEFINE_GAMEPLAY_TAG(InputTag_TargetSwitch, "InputTag.TargetSwitch")
 
     UE_DEFINE_GAMEPLAY_TAG(Event_Death, "Event.Death")
     UE_DEFINE_GAMEPLAY_TAG(Event_Damaged, "Event.Damaged")
