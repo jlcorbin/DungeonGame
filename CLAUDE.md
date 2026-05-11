@@ -178,20 +178,18 @@ ModelingToolsEditorMode, GameplayAbilities, EnhancedInput
 - **Target dummy**: `ADungeonTargetDummy` — static enemy, plays `DeathMontage`, disables capsule on death
 - **Enemy health bar**: `UDungeonEnemyHealthBarWidget` — floating widget above enemies
 - **HUD**: `UDungeonHUDWidget` — health/stamina/XP/level bars, bound to attribute change delegates
+- **Target lock system**: `UDungeonTargetLockComponent` on `ADungeonCharacter`. RMB toggles, sphere-traces from camera forward (1000u radius 125, Pawn object query, requires `Damageable` actor tag). While locked, `TickComponent` updates controller rotation toward target each frame with world-space `ZOffset` (60.f default in cm) applied to target location before computing look rotation; pitch clamped ±80°. Lock auto-releases when target becomes invalid (e.g. death).
+- **Directional dodge**: `UDungeonGameplayAbility_Dodge` rewritten for 4 directional montages (FWD/BWD/LFT/RGT) selected from local-space velocity. `LaunchCharacter` applies world-space momentum (`DodgeLaunchSpeed` 900.f, `DodgeBrakingDeceleration` 2000.f, `BrakingFrictionFactor` zeroed during roll, all restored in `OnDodgeEnd`). `State.Dodging` in `ActivationOwnedTags` blocks re-entry. Cancels active attack on activation. Camera-relative strafing movement enabled via `bOrientRotationToMovement=false`, `bUseControllerDesiredRotation=true`, `bUseControllerRotationYaw=true` on `BP_DungeonPlayerCharacter`.
+- **Camera-relative movement**: WASD now strafes relative to camera forward/right instead of rotating character to face movement direction.
+- **AnimBP locomotion stop interruptible**: Stop→Idle transition rule gated on (TimeRemaining ratio OR `bMontageActive` variable). `bMontageActive` is a thread-safe bool updated in `EventBlueprintUpdateAnimation` from `IsAnyMontagePlaying`. Interrupt Mode set to Automatic. Eliminates snap-back when dodging or attacking out of deceleration.
+- **HUD stamina updates on all paths**: `PostGameplayEffectExecute` has a direct `GetStaminaAttribute()` branch that re-clamps Stamina and broadcasts `OnStatChanged` for Instant GE cost paths (`GE_DodgeCost`). Sprint regen (`IncomingStaminaRegen`) branch and direct Stamina branch both broadcast `OnStatChanged` so HUD updates regardless of source.
 - **Debug damage key**: `OnDebugDamage` on player, finds nearest `ADungeonCharacter` within 500u and applies `GE_Damage` (temporary scaffolding)
 - **BP layer**: `BP_DungeonPlayerCharacter`, `BP_DungeonGameMode`, test level, `IMC_Default`, `IA_*` input actions, `GE_*` gameplay effects
 
 ### What is NOT yet built (MVP blockers)
-- Target lock system editor wiring — **NEXT UP**
-  - IA_TargetLock input action asset + IMC_Default binding (Tab key)
-  - Assign IA_TargetLock to BP_DungeonPlayerCharacter `TargetLockAction` UPROPERTY
-  - WBP_TargetLockIndicator Blueprint (reparent to `UDungeonTargetIndicatorWidget`, implement `SetLocked` visual)
-  - `UDungeonTargetLockComponent::ToggleLock` does not yet call `SetTargetLocked` on the locked actor — wire this notification up
-- Directional dodge editor wiring — **NEXT UP**
-  - Assign 4 roll montages (FWD/BWD/LFT/RGT) to `BP_DungeonPlayerCharacter` / GA_Dodge class defaults
-- Knockback on hit
-- Camera shake on hit
-- Real enemy AI (AIController + perception + behavior tree) — currently using `ADungeonTargetDummy`
+- Knockback on hit — **NEXT UP**
+- Camera shake on hit — **NEXT UP**
+- Real enemy AI (AIController + perception + behavior tree) — currently using `ADungeonTargetDummy` — **NEXT UP**
 - Loot system (drops, inventory, rarity tiers, gold economy)
 - Town hub (level, NPCs, merchant, innkeeper)
 - Extraction mechanic (checkpoints + scrolls)
@@ -208,6 +206,26 @@ ModelingToolsEditorMode, GameplayAbilities, EnhancedInput
 
 [Most recent first.]
 
+- 2026-05-10 Target lock + directional dodge + camera-relative movement
+  + stop-state interrupt + HUD stamina pipeline complete. New:
+  UDungeonTargetLockComponent (RMB toggle, sphere trace, camera follow
+  with ZOffset 60.f world-space cm); UDungeonTargetIndicatorWidget
+  (Blueprint base, SetLocked BlueprintImplementableEvent — visual not
+  yet wired); ADungeonTargetDummy TargetIndicatorWidget component
+  (deferred SetTargetLocked notification still pending).
+  UDungeonGameplayAbility_Dodge rewritten: 4 directional montages,
+  LaunchCharacter momentum (900u launch, 2000u braking, friction zeroed
+  during roll, all restored on end), State.Dodging blocks re-entry.
+  ADungeonPlayerCharacter gained TargetLockAction (RMB binding).
+  CharacterMovement reconfigured for camera-relative strafing.
+  ABP_NoWeapon locomotion Stop state now interruptible by montages
+  via thread-safe bMontageActive variable. PostGameplayEffectExecute
+  gained direct Stamina-attribute branch with OnStatChanged broadcast
+  so Instant GE costs (dodge) update the HUD. Tags added:
+  InputTag.TargetLock, State.Dodging. C2445 ternary fixes (.Get() on
+  TObjectPtr returns in SelectMontage) and C4996 deprecation fixes
+  (AbilityTags.AddTag → SetAssetTags) applied across Dodge/Attack/Sprint
+  abilities.
 - 2026-05-10 Fixed Instant GE stamina changes not firing HUD delegate. PostGameplayEffectExecute now clamps and re-sets Stamina after any direct Stamina attribute change, forcing Current Value write and delegate broadcast.
 - 2026-05-10 Dodge launch velocity: LaunchCharacter in roll direction (DodgeLaunchSpeed 900.f), braking deceleration reduced during roll (DodgeBrakingDeceleration 2000.f) then restored. BrakingFrictionFactor zeroed during roll for natural coast.
 - 2026-05-10 Fixed UpdateControlRotation: replaced pitch-degree ZOffset with world-space vertical offset on target location. ZOffset default changed from 80.f to 60.f (now in cm, not degrees).
